@@ -107,7 +107,6 @@
 
 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
 
-<!-- LOGIN -->
 <div class="card" id="loginCard">
   <div class="logo">🏦 Kings<span>gate</span></div>
   <h1>Welcome back</h1>
@@ -119,10 +118,9 @@
   <button onclick="login()">Sign in</button>
 </div>
 
-<!-- PIN -->
 <div id="pinScreen">
   <h2>Enter your PIN</h2>
-  <p>Default PIN: 1234 (tap to change anytime)</p>
+  <p>Enter your 4-digit PIN</p>
   <div class="pin-dots">
     <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
@@ -134,7 +132,6 @@
   </div>
 </div>
 
-<!-- APP -->
 <div class="app" id="app">
   <div class="page active" id="page-home">
     <div class="topbar">
@@ -207,7 +204,6 @@
   </div>
 </div>
 
-<!-- SEND MODAL -->
 <div class="modal" id="sendModal">
   <div class="modal-card">
     <h2>Send money</h2>
@@ -222,7 +218,6 @@
   </div>
 </div>
 
-<!-- MOVE MONEY MODAL -->
 <div class="modal" id="moveModal">
   <div class="modal-card">
     <h2 id="moveTitle">Move money</h2>
@@ -236,13 +231,12 @@
 </div>
 
 <script>
-  // defaults — the first time, always start here
   const START_BALANCE = 12450.00;
   const START_SAVINGS = 1200.00;
 
   let balance = START_BALANCE;
   let savings = START_SAVINGS;
-  let pin = '1234';
+  let pin = '5050';
   let enteredPin = '';
   let moveDirection = 'toSavings';
   let pendingUser = '';
@@ -290,7 +284,7 @@
   }
   function checkPin() {
     if (enteredPin !== pin) {
-      alert('Wrong PIN. Try 1234.');
+      alert('Wrong PIN.');
       enteredPin = '';
       updatePinDots();
       return;
@@ -299,9 +293,23 @@
     document.getElementById('app').style.display = 'block';
     document.getElementById('userName').textContent = pendingUser;
     document.getElementById('cardHolder').textContent = pendingUser.toUpperCase();
-    const last4 = Math.floor(1000 + Math.random() * 9000);
-    document.getElementById('acctNum').textContent = '•••• •••• •••• ' + last4;
-    document.getElementById('cardNumber').textContent = last4 + ' •••• •••• ' + Math.floor(1000 + Math.random()*9000);
+
+    // stable account number — saved once, reused forever
+    let acct = localStorage.getItem('fb_acct');
+    if (!acct) {
+      acct = Math.floor(1000 + Math.random() * 9000) + '';
+      localStorage.setItem('fb_acct', acct);
+    }
+    document.getElementById('acctNum').textContent = '•••• •••• •••• ' + acct;
+    document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + localStorage.getItem('fb_card4') || '';
+
+    let card4 = localStorage.getItem('fb_card4');
+    if (!card4) {
+      card4 = Math.floor(1000 + Math.random() * 9000) + '';
+      localStorage.setItem('fb_card4', card4);
+    }
+    document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
+
     animateTo(document.getElementById('balanceAmt'), balance);
     document.getElementById('potCurrent').textContent = fmt(balance);
     document.getElementById('potSavings').textContent = fmt(savings);

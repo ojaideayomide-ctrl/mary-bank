@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<div class="logo">🏦 Kingsgate Bank</div>
+<title>Kingsgate Bank</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; }
-
   body {
     min-height: 100vh;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -15,7 +14,6 @@
     justify-content: center;
     color: #e2e8f0;
   }
-
   .card {
     width: 100%;
     max-width: 420px;
@@ -25,7 +23,6 @@
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-
   .logo {
     font-size: 22px;
     font-weight: 700;
@@ -36,12 +33,9 @@
     gap: 10px;
   }
   .logo span { color: #38bdf8; }
-
   h1 { font-size: 20px; margin-bottom: 6px; }
   .sub { color: #94a3b8; font-size: 14px; margin-bottom: 28px; }
-
   label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
-
   input {
     width: 100%;
     padding: 12px 14px;
@@ -55,7 +49,6 @@
     transition: border 0.2s;
   }
   input:focus { border-color: #38bdf8; }
-
   button {
     width: 100%;
     padding: 13px;
@@ -69,10 +62,7 @@
     transition: background 0.2s;
   }
   button:hover { background: #7dd3fc; }
-
-  /* ---- Dashboard ---- */
   .dashboard { display: none; width: 100%; max-width: 480px; }
-
   .topbar {
     display: flex;
     justify-content: space-between;
@@ -81,7 +71,6 @@
   }
   .greeting { font-size: 15px; color: #94a3b8; }
   .greeting b { color: #e2e8f0; display: block; font-size: 18px; margin-top: 2px; }
-
   .logout {
     background: transparent;
     border: 1px solid #334155;
@@ -92,7 +81,6 @@
     font-weight: 500;
   }
   .logout:hover { background: #334155; color: #e2e8f0; }
-
   .balance-box {
     background: linear-gradient(135deg, #0ea5e9, #2563eb);
     border-radius: 16px;
@@ -102,9 +90,7 @@
   .balance-box .lbl { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
   .balance-box .amt { font-size: 38px; font-weight: 700; letter-spacing: -1px; }
   .balance-box .acct { font-size: 13px; opacity: 0.8; margin-top: 14px; }
-
   .tx-title { font-size: 14px; color: #94a3b8; margin-bottom: 12px; }
-
   .tx {
     display: flex;
     justify-content: space-between;
@@ -122,55 +108,47 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div class="card" id="loginCard">
-    <div class="logo">🏦 Ferro<span>Bank</span></div>
+    <div class="logo">🏦 Kings<span>gate</span></div>
     <h1>Welcome back</h1>
     <p class="sub">Sign in to your account</p>
-
     <label>Full name</label>
     <input id="nameInput" type="text" placeholder="e.g. Mary Ferro" autocomplete="off">
-
     <label>Password</label>
     <input id="passInput" type="password" placeholder="Any password works">
-
     <button onclick="login()">Sign in</button>
   </div>
 
-  <!-- DASHBOARD -->
   <div class="dashboard" id="dash">
     <div class="topbar">
       <div class="greeting">Welcome back<b id="userName">—</b></div>
       <button class="logout" onclick="logout()">Log out</button>
     </div>
-
     <div class="balance-box">
       <div class="lbl">Available balance</div>
-      <div class="amt">$12,450.00</div>
+      <div class="amt">£12,450.00</div>
       <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
     </div>
-
     <div class="tx-title">Recent transactions</div>
-
     <div class="tx">
-      <div><div class="name">Salary Deposit</div><div class="date">Oct 12, 2026</div></div>
-      <div class="amount pos">+$4,200.00</div>
+      <div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div>
+      <div class="amount pos">+£4,200.00</div>
     </div>
     <div class="tx">
-      <div><div class="name">Amazon</div><div class="date">Oct 11, 2026</div></div>
-      <div class="amount neg">−$89.99</div>
+      <div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div>
+      <div class="amount neg">−£89.99</div>
     </div>
     <div class="tx">
-      <div><div class="name">Starbucks</div><div class="date">Oct 10, 2026</div></div>
-      <div class="amount neg">−$6.45</div>
+      <div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div>
+      <div class="amount neg">−£6.45</div>
     </div>
     <div class="tx">
       <div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div>
-      <div class="amount pos">+$250.00</div>
+      <div class="amount pos">+£250.00</div>
     </div>
     <div class="tx">
-      <div><div class="name">Netflix</div><div class="date">Oct 8, 2026</div></div>
-      <div class="amount neg">−$15.99</div>
+      <div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div>
+      <div class="amount neg">−£15.99</div>
     </div>
   </div>
 
@@ -178,23 +156,14 @@
   function login() {
     const name = document.getElementById('nameInput').value.trim();
     const pass = document.getElementById('passInput').value;
-
-    if (!name || !pass) {
-      alert('Enter a name and password.');
-      return;
-    }
-
+    if (!name || !pass) { alert('Enter a name and password.'); return; }
     document.getElementById('userName').textContent = name;
-
-    // random fake card number
     const last4 = Math.floor(1000 + Math.random() * 9000);
     document.getElementById('acctNum').textContent = '•••• •••• •••• ' + last4;
-
     document.getElementById('loginCard').style.display = 'none';
     document.getElementById('dash').style.display = 'block';
     localStorage.setItem('fb_user', name);
   }
-
   function logout() {
     localStorage.removeItem('fb_user');
     document.getElementById('nameInput').value = '';
@@ -202,8 +171,6 @@
     document.getElementById('dash').style.display = 'none';
     document.getElementById('loginCard').style.display = 'block';
   }
-
-  // keep you logged in on refresh
   window.onload = () => {
     const saved = localStorage.getItem('fb_user');
     if (saved) {

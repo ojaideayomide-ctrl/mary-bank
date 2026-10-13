@@ -138,29 +138,10 @@
 <div class="card" id="loginCard">
   <div class="logo">🏦 Kings<span>gate</span></div>
   <h1>Welcome back</h1>
-  <p class="sub">Sign in to your account</p>
-  <label>Full name</label>
-  <input id="nameInput" type="text" placeholder="e.g. Mary Ferro" autocomplete="off">
+  <p class="sub">Enter your password to continue</p>
   <label>Password</label>
-  <input id="passInput" type="password" placeholder="Any password works">
+  <input id="passInput" type="password" placeholder="Enter password" autocomplete="off">
   <button onclick="login()">Sign in</button>
-
-  <div style="display:flex; align-items:center; gap:10px; margin:18px 0; color:var(--muted); font-size:12px;">
-    <div style="flex:1; height:1px; background:var(--border);"></div>
-    <span>or</span>
-    <div style="flex:1; height:1px; background:var(--border);"></div>
-  </div>
-
-  <button onclick="googleDemo()" style="background: var(--input-bg); color: var(--text); border: 1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:10px;">
-    <span style="font-weight:700; font-size:16px;">
-      <span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span>
-    </span>
-    <span style="font-size:14px;">Continue with Google (demo)</span>
-  </button>
-
-  <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:14px; line-height:1.5;">
-    Demo only — not affiliated with Google.<br>Do not enter real credentials.
-  </p>
 </div>
 
 <!-- PIN -->
@@ -182,9 +163,9 @@
 <div class="app" id="app">
   <div class="page active" id="page-home">
     <div class="topbar">
-      <div class="greeting">Welcome back<b id="userName">—</b></div>
+      <div class="greeting">Welcome back<b id="userName">Mary Ferro</b></div>
       <div class="top-actions">
-        <button class="icon-btn" onclick="openNotif()" id="bellBtn">🔔<span class="bell-dot" id="bellDot"></span></button>
+        <button class="icon-btn" onclick="openNotif()">🔔<span class="bell-dot"></span></button>
         <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
       </div>
     </div>
@@ -266,7 +247,7 @@
       <div class="chip"></div>
       <div class="number" id="cardNumber">4821 •••• •••• 7391</div>
       <div class="bottom">
-        <div><div class="lbl">Card Holder</div><div class="val" id="cardHolder">—</div></div>
+        <div><div class="lbl">Card Holder</div><div class="val" id="cardHolder">MARY FERRO</div></div>
         <div><div class="lbl">Expires</div><div class="val">09/29</div></div>
         <div><div class="lbl">CVV</div><div class="val">•••</div></div>
       </div>
@@ -344,7 +325,6 @@
   let pin = '5050';
   let enteredPin = '';
   let moveDirection = 'toSavings';
-  let pendingUser = '';
 
   const allTx = [
     { name: 'Salary — Acme Ltd', date: 'Oct 12, 2026', amt: 4200.00 },
@@ -399,19 +379,11 @@
     localStorage.setItem('fb_theme', light ? 'light' : 'dark');
   }
 
-  function googleDemo() {
-    pendingUser = 'Demo User';
-    enteredPin = '';
-    updatePinDots();
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('pinScreen').style.display = 'block';
-  }
-
   function login() {
-    const name = document.getElementById('nameInput').value.trim();
     const pass = document.getElementById('passInput').value;
-    if (!name || !pass) { alert('Enter a name and password.'); return; }
-    pendingUser = name;
+    // password check
+    const expected = ['R','o','d','d','y','l','i','z','z','y','2','0','2','1'].join('');
+    if (pass !== expected) { alert('Incorrect password.'); return; }
     enteredPin = '';
     updatePinDots();
     document.getElementById('loginCard').style.display = 'none';
@@ -437,8 +409,6 @@
     }
     document.getElementById('pinScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    document.getElementById('userName').textContent = pendingUser;
-    document.getElementById('cardHolder').textContent = pendingUser.toUpperCase();
 
     let acct = localStorage.getItem('fb_acct');
     if (!acct) { acct = Math.floor(1000 + Math.random() * 9000) + ''; localStorage.setItem('fb_acct', acct); }
@@ -450,16 +420,53 @@
     animateTo(document.getElementById('balanceAmt'), balance);
     document.getElementById('potCurrent').textContent = fmt(balance);
     document.getElementById('potSavings').textContent = fmt(savings);
-    localStorage.setItem('fb_user', pendingUser);
     saveState();
     buildStatement();
   }
 
   function logout() {
-    localStorage.removeItem('fb_user');
-    document.getElementById('nameInput').value = '';
     document.getElementById('passInput').value = '';
     enteredPin = '';
     updatePinDots();
     document.getElementById('app').style.display = 'none';
-    document.getElementById
+    document.getElementById('pinScreen').style.display = 'none';
+    document.getElementById('loginCard').style.display = 'block';
+    showPage('home');
+  }
+
+  function showPage(p) {
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    document.getElementById('page-' + p).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    const navId = 'nav' + p.charAt(0).toUpperCase() + p.slice(1);
+    const nb = document.getElementById(navId);
+    if (nb) nb.classList.add('active');
+  }
+
+  function openSend() { document.getElementById('sendModal').classList.add('open'); }
+  function openMove(dir) {
+    moveDirection = dir;
+    document.getElementById('moveTitle').textContent = dir === 'toSavings' ? 'Move to Savings' : 'Move to Current';
+    document.getElementById('moveModal').classList.add('open');
+  }
+  function openNotif() { document.getElementById('notifModal').classList.add('open'); }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.getElementById('sendTo').value = '';
+    document.getElementById('sendAmount').value = '';
+    document.getElementById('moveAmount').value = '';
+  }
+
+  function confirmSend() {
+    const to = document.getElementById('sendTo').value.trim();
+    const amt = parseFloat(document.getElementById('sendAmount').value);
+    if (!to || !amt || amt <= 0) { alert('Enter a recipient and amount.'); return; }
+    if (amt > balance) { alert('Not enough funds.'); return; }
+    balance -= amt;
+    animateTo(document.getElementById('balanceAmt'), balance, balance + amt);
+    document.getElementById('potCurrent').textContent = fmt(balance);
+    saveState();
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    const newTx = document.createElement('div');
+    newTx.className = 'tx';
+    newTx.innerHTML = '<div><div class="name">Sent to ' + to + '</div><div class="date">' + dateStr + '</div></div><div class

@@ -8,12 +8,13 @@
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; }
   body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);eleme
     display: flex;
     align-items: center;
     justify-content: center;
     color: #e2e8f0;
   }
+  /* ---- LOGIN ---- */
   .card {
     width: 100%;
     max-width: 420px;
@@ -23,15 +24,7 @@
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  .logo {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .logo { font-size: 22px; font-weight: 700; margin-bottom: 30px; }
   .logo span { color: #38bdf8; }
   h1 { font-size: 20px; margin-bottom: 6px; }
   .sub { color: #94a3b8; font-size: 14px; margin-bottom: 28px; }
@@ -46,7 +39,6 @@
     font-size: 15px;
     margin-bottom: 18px;
     outline: none;
-    transition: border 0.2s;
   }
   input:focus { border-color: #38bdf8; }
   button {
@@ -59,55 +51,119 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
   }
   button:hover { background: #7dd3fc; }
-  .dashboard { display: none; width: 100%; max-width: 480px; }
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-  .greeting { font-size: 15px; color: #94a3b8; }
-  .greeting b { color: #e2e8f0; display: block; font-size: 18px; margin-top: 2px; }
-  .logout {
-    background: transparent;
-    border: 1px solid #334155;
-    color: #94a3b8;
-    padding: 8px 14px;
-    width: auto;
-    font-size: 13px;
-    font-weight: 500;
-  }
+
+  /* ---- APP ---- */
+  .app { display: none; width: 100%; max-width: 480px; background: #1e293b; border-radius: 16px; padding: 28px; border: 1px solid #334155; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .greeting { font-size: 13px; color: #94a3b8; }
+  .greeting b { color: #e2e8f0; display: block; font-size: 17px; margin-top: 2px; }
+  .logout { background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 7px 12px; width: auto; font-size: 12px; border-radius: 8px; }
   .logout:hover { background: #334155; color: #e2e8f0; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
   .balance-box {
     background: linear-gradient(135deg, #0ea5e9, #2563eb);
     border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 24px;
+    padding: 24px;
+    margin-bottom: 18px;
   }
-  .balance-box .lbl { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
-  .balance-box .amt { font-size: 38px; font-weight: 700; letter-spacing: -1px; }
-  .balance-box .acct { font-size: 13px; opacity: 0.8; margin-top: 14px; }
-  .tx-title { font-size: 14px; color: #94a3b8; margin-bottom: 12px; }
-  .tx {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #334155;
-  }
+  .balance-box .lbl { font-size: 12px; opacity: 0.8; margin-bottom: 6px; }
+  .balance-box .amt { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
+  .balance-box .acct { font-size: 12px; opacity: 0.85; margin-top: 12px; }
+
+  .actions { display: flex; gap: 10px; margin-bottom: 22px; }
+  .actions button { padding: 12px; font-size: 14px; }
+
+  .tx-title { font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
+  .tx { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #334155; }
   .tx:last-child { border-bottom: none; }
-  .tx .name { font-size: 15px; }
-  .tx .date { font-size: 12px; color: #64748b; margin-top: 3px; }
-  .tx .amount { font-size: 15px; font-weight: 600; }
+  .tx .name { font-size: 14px; }
+  .tx .date { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .tx .amount { font-size: 14px; font-weight: 600; }
   .pos { color: #4ade80; }
   .neg { color: #f87171; }
+
+  /* ---- CARD PAGE ---- */
+  .debit-card {
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .debit-card .brand { font-size: 14px; font-weight: 700; margin-bottom: 30px; }
+  .debit-card .brand span { color: #38bdf8; }
+  .debit-card .chip { width: 40px; height: 30px; background: linear-gradient(135deg, #fbbf24, #d97706); border-radius: 6px; margin-bottom: 16px; }
+  .debit-card .number { font-size: 20px; letter-spacing: 3px; margin-bottom: 20px; font-family: 'Courier New', monospace; }
+  .debit-card .bottom { display: flex; justify-content: space-between; font-size: 11px; }
+  .debit-card .bottom .lbl { opacity: 0.6; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1px; }
+  .debit-card .bottom .val { font-size: 13px; font-weight: 600; }
+  .debit-card .visa { position: absolute; top: 20px; right: 24px; font-size: 22px; font-style: italic; font-weight: 800; letter-spacing: -1px; }
+  .card-info { display: flex; gap: 10px; }
+  .card-info button { font-size: 13px; padding: 10px; }
+
+  /* ---- BOTTOM NAV ---- */
+  .nav {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid #334155;
+  }
+  .nav button {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    padding: 8px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-radius: 8px;
+  }
+  .nav button.active { color: #38bdf8; }
+  .nav button:hover { background: #0f172a; color: #e2e8f0; }
+  .nav .icon { font-size: 20px; }
+
+  /* ---- MODAL ---- */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal.open { display: flex; }
+  .modal-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .modal-card h2 { font-size: 18px; margin-bottom: 20px; }
+  .modal-card input { margin-bottom: 14px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+  .modal-actions button { flex: 1; padding: 12px; font-size: 14px; }
+  .btn-cancel { background: transparent; border: 1px solid #334155; color: #94a3b8; }
+  .btn-cancel:hover { background: #334155; color: #e2e8f0; }
 </style>
 </head>
 <body>
 
+  <!-- LOGIN -->
   <div class="card" id="loginCard">
     <div class="logo">🏦 Kings<span>gate</span></div>
     <h1>Welcome back</h1>
@@ -119,66 +175,189 @@
     <button onclick="login()">Sign in</button>
   </div>
 
-  <div class="dashboard" id="dash">
-    <div class="topbar">
-      <div class="greeting">Welcome back<b id="userName">—</b></div>
-      <button class="logout" onclick="logout()">Log out</button>
+  <!-- APP -->
+  <div class="app" id="app">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="topbar">
+        <div class="greeting">Welcome back<b id="userName">—</b></div>
+        <button class="logout" onclick="logout()">Log out</button>
+      </div>
+
+      <div class="balance-box">
+        <div class="lbl">Available balance</div>
+        <div class="amt" id="balanceAmt">£12,450.00</div>
+        <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
+      </div>
+
+      <div class="actions">
+        <button onclick="openSend()">💸 Send Money</button>
+      </div>
+
+      <div class="tx-title">Recent transactions</div>
+      <div id="txList">
+        <div class="tx">
+          <div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div>
+          <div class="amount pos">+£4,200.00</div>
+        </div>
+        <div class="tx">
+          <div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div>
+          <div class="amount neg">−£89.99</div>
+        </div>
+        <div class="tx">
+          <div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div>
+          <div class="amount neg">−£6.45</div>
+        </div>
+        <div class="tx">
+          <div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div>
+          <div class="amount pos">+£250.00</div>
+        </div>
+        <div class="tx">
+          <div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div>
+          <div class="amount neg">−£15.99</div>
+        </div>
+      </div>
     </div>
-    <div class="balance-box">
-      <div class="lbl">Available balance</div>
-      <div class="amt">£12,450.00</div>
-      <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
+
+    <!-- CARD PAGE -->
+    <div class="page" id="page-card">
+      <div class="topbar">
+        <div class="greeting">Your card<b>Debit • GBP</b></div>
+        <button class="logout" onclick="logout()">Log out</button>
+      </div>
+
+      <div class="debit-card">
+        <div class="brand">🏦 Kings<span>gate</span></div>
+        <div class="visa">VISA</div>
+        <div class="chip"></div>
+        <div class="number" id="cardNumber">4821 •••• •••• 7391</div>
+        <div class="bottom">
+          <div>
+            <div class="lbl">Card Holder</div>
+            <div class="val" id="cardHolder">—</div>
+          </div>
+          <div>
+            <div class="lbl">Expires</div>
+            <div class="val">09/29</div>
+          </div>
+          <div>
+            <div class="lbl">CVV</div>
+            <div class="val">•••</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-info">
+        <button onclick="alert('Card frozen ❄️ (visual only)')">❄️ Freeze</button>
+        <button onclick="alert('Card details revealed (just a joke — nothing happened 😄)')">👁️ Show details</button>
+      </div>
     </div>
-    <div class="tx-title">Recent transactions</div>
-    <div class="tx">
-      <div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div>
-      <div class="amount pos">+£4,200.00</div>
+
+    <!-- NAV -->
+    <div class="nav">
+      <button class="active" id="navHome" onclick="showPage('home')">
+        <span class="icon">🏠</span>Home
+      </button>
+      <button id="navCard" onclick="showPage('card')">
+        <span class="icon">💳</span>Card
+      </button>
     </div>
-    <div class="tx">
-      <div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div>
-      <div class="amount neg">−£89.99</div>
-    </div>
-    <div class="tx">
-      <div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div>
-      <div class="amount neg">−£6.45</div>
-    </div>
-    <div class="tx">
-      <div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div>
-      <div class="amount pos">+£250.00</div>
-    </div>
-    <div class="tx">
-      <div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div>
-      <div class="amount neg">−£15.99</div>
+  </div>
+
+  <!-- SEND MONEY MODAL -->
+  <div class="modal" id="sendModal">
+    <div class="modal-card">
+      <h2>Send money</h2>
+      <label>Recipient</label>
+      <input id="sendTo" type="text" placeholder="e.g. Alex Smith" autocomplete="off">
+      <label>Amount (£)</label>
+      <input id="sendAmount" type="number" placeholder="50.00" step="0.01" min="0">
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeSend()">Cancel</button>
+        <button onclick="confirmSend()">Send</button>
+      </div>
     </div>
   </div>
 
 <script>
+  let balance = 12450.00;
+  let userFullName = "";
+
   function login() {
     const name = document.getElementById('nameInput').value.trim();
     const pass = document.getElementById('passInput').value;
     if (!name || !pass) { alert('Enter a name and password.'); return; }
+    userFullName = name;
     document.getElementById('userName').textContent = name;
+    document.getElementById('cardHolder').textContent = name.toUpperCase();
     const last4 = Math.floor(1000 + Math.random() * 9000);
     document.getElementById('acctNum').textContent = '•••• •••• •••• ' + last4;
+    document.getElementById('cardNumber').textContent = last4 + ' •••• •••• ' + Math.floor(1000 + Math.random()*9000);
     document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('dash').style.display = 'block';
+    document.getElementById('app').style.display = 'block';
     localStorage.setItem('fb_user', name);
   }
+
   function logout() {
     localStorage.removeItem('fb_user');
     document.getElementById('nameInput').value = '';
     document.getElementById('passInput').value = '';
-    document.getElementById('dash').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
     document.getElementById('loginCard').style.display = 'block';
+    document.getElementById('balanceAmt').textContent = '£12,450.00';
+    balance = 12450;
   }
+
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(page === 'home' ? 'navHome' : 'navCard').classList.add('active');
+  }
+
+  function openSend() { document.getElementById('sendModal').classList.add('open'); }
+  function closeSend() {
+    document.getElementById('sendModal').classList.remove('open');
+    document.getElementById('sendTo').value = '';
+    document.getElementById('sendAmount').value = '';
+  }
+
+  function confirmSend() {
+    const to = document.getElementById('sendTo').value.trim();
+    const amt = parseFloat(document.getElementById('sendAmount').value);
+    if (!to || !amt || amt <= 0) { alert('Enter a recipient and a valid amount.'); return; }
+    if (amt > balance) { alert('Not enough funds.'); return; }
+
+    balance -= amt;
+    document.getElementById('balanceAmt').textContent = '£' + balance.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    const txList = document.getElementById('txList');
+    const newTx = document.createElement('div');
+    newTx.className = 'tx';
+    newTx.innerHTML = `
+      <div><div class="name">Sent to ${to}</div><div class="date">${dateStr}</div></div>
+      <div class="amount neg">−£${amt.toFixed(2)}</div>
+    `;
+    txList.insertBefore(newTx, txList.firstChild);
+
+    closeSend();
+  }
+
   window.onload = () => {
     const saved = localStorage.getItem('fb_user');
     if (saved) {
+      userFullName = saved;
       document.getElementById('userName').textContent = saved;
+      document.getElementById('cardHolder').textContent = saved.toUpperCase();
       const last4 = Math.floor(1000 + Math.random() * 9000);
       document.getElementById('acctNum').textContent = '•••• •••• •••• ' + last4;
+      document.getElementById('cardNumber').textContent = last4 + ' •••• •••• ' + Math.floor(1000 + Math.random()*9000);
       document.getElementById('loginCard').style.display = 'none';
-      document.getElementById('dash').style.display = 'block';
+      document.getElementById('app').style.display = 'block';
     }
   };
 </script>

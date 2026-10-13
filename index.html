@@ -5,136 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kingsgate Bank</title>
 <style>
-  :root {
-    --bg1: #0f172a; --bg2: #1e293b; --panel: #1e293b; --border: #334155;
-    --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-hover: #7dd3fc;
-    --input-bg: #0f172a;
-  }
-  body.light {
-    --bg1: #f1f5f9; --bg2: #e2e8f0; --panel: #ffffff; --border: #cbd5e1;
-    --text: #0f172a; --muted: #64748b; --accent: #0284c7; --accent-hover: #0369a1;
-    --input-bg: #f8fafc;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; }
-  body { min-height: 100vh; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%); display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.3s, color 0.3s; padding: 20px; }
-
-  .theme-toggle { position: fixed; top: 16px; right: 16px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; font-size: 16px; cursor: pointer; width: auto; z-index: 50; }
-
-  .card { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-  .logo { font-size: 22px; font-weight: 700; margin-bottom: 30px; }
-  .logo span { color: var(--accent); }
-  h1 { font-size: 20px; margin-bottom: 6px; }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  input { width: 100%; padding: 12px 14px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; margin-bottom: 18px; outline: none; }
-  input:focus { border-color: var(--accent); }
-  button { width: 100%; padding: 13px; background: var(--accent); color: #0f172a; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  button:hover { background: var(--accent-hover); }
-
-  #pinScreen { display: none; width: 100%; max-width: 380px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; }
-  #pinScreen h2 { font-size: 18px; margin-bottom: 8px; }
-  #pinScreen p { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
-  .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 30px; }
-  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); }
-  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
-  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .keypad button { padding: 18px; font-size: 18px; font-weight: 600; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; }
-  .keypad button:hover { background: var(--border); }
-  .keypad .empty { visibility: hidden; }
-
-  .app { display: none; width: 100%; max-width: 480px; background: var(--panel); border-radius: 16px; padding: 28px; border: 1px solid var(--border); }
-  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; }
-  .greeting { font-size: 13px; color: var(--muted); flex: 1; }
-  .greeting b { color: var(--text); display: block; font-size: 17px; margin-top: 2px; }
-  .top-actions { display: flex; gap: 8px; align-items: center; }
-  .icon-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); width: 36px; height: 36px; border-radius: 10px; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; padding: 0; }
-  .icon-btn:hover { background: var(--border); color: var(--text); }
-  .bell-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
-
-  .page { display: none; }
-  .page.active { display: block; }
-
-  .balance-box { background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 16px; padding: 24px; margin-bottom: 18px; color: #fff; }
-  .balance-box .lbl { font-size: 12px; opacity: 0.85; margin-bottom: 6px; }
-  .balance-box .amt { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
-  .balance-box .acct { font-size: 12px; opacity: 0.85; margin-top: 12px; }
-
-  .actions { display: flex; gap: 10px; margin-bottom: 22px; }
-  .actions button { padding: 12px; font-size: 14px; }
-
-  .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .section-head .title { font-size: 13px; color: var(--muted); }
-  .section-head .link { font-size: 12px; color: var(--accent); cursor: pointer; background: none; border: none; width: auto; padding: 0; }
-  .section-head .link:hover { text-decoration: underline; }
-
-  .tx { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .tx:last-child { border-bottom: none; }
-  .tx .name { font-size: 14px; }
-  .tx .date { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .tx .amount { font-size: 14px; font-weight: 600; }
-  .pos { color: #4ade80; }
-  .neg { color: #f87171; }
-
-  .pot { background: var(--input-bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 14px; }
-  .pot .pot-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  .pot .pot-amt { font-size: 26px; font-weight: 700; margin-bottom: 14px; }
-  .pot .pot-actions { display: flex; gap: 8px; }
-  .pot .pot-actions button { font-size: 13px; padding: 10px; }
-
-  .chart-wrap { display: flex; justify-content: center; margin: 20px 0 30px; }
-  .donut { width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(#38bdf8 0deg 130deg, #f59e0b 130deg 220deg, #a78bfa 220deg 290deg, #4ade80 290deg 360deg); position: relative; display: flex; align-items: center; justify-content: center; }
-  .donut::after { content: ''; position: absolute; width: 130px; height: 130px; border-radius: 50%; background: var(--panel); }
-  .donut-label { position: relative; z-index: 2; text-align: center; }
-  .donut-label .lbl { font-size: 11px; color: var(--muted); }
-  .donut-label .amt { font-size: 20px; font-weight: 700; margin-top: 2px; }
-
-  .legend { display: flex; flex-direction: column; gap: 10px; }
-  .legend .item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
-  .legend .left { display: flex; align-items: center; gap: 10px; }
-  .legend .swatch { width: 12px; height: 12px; border-radius: 4px; }
-  .legend .val { color: var(--muted); font-weight: 600; }
-
-  .debit-card { background: linear-gradient(135deg, #1e3a8a, #0f172a); border: 1px solid var(--border); border-radius: 18px; padding: 24px; margin-bottom: 22px; position: relative; color: #e2e8f0; }
-  .debit-card .brand { font-size: 14px; font-weight: 700; margin-bottom: 30px; }
-  .debit-card .brand span { color: #38bdf8; }
-  .debit-card .chip { width: 40px; height: 30px; background: linear-gradient(135deg, #fbbf24, #d97706); border-radius: 6px; margin-bottom: 16px; }
-  .debit-card .number { font-size: 20px; letter-spacing: 3px; margin-bottom: 20px; font-family: 'Courier New', monospace; }
-  .debit-card .bottom { display: flex; justify-content: space-between; font-size: 11px; }
-  .debit-card .bottom .lbl { opacity: 0.6; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1px; }
-  .debit-card .bottom .val { font-size: 13px; font-weight: 600; }
-  .debit-card .visa { position: absolute; top: 20px; right: 24px; font-size: 22px; font-style: italic; font-weight: 800; }
-  .card-info { display: flex; gap: 10px; }
-  .card-info button { font-size: 13px; padding: 10px; }
-
-  .nav { display: flex; justify-content: space-around; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .nav button { background: transparent; border: none; color: var(--muted); font-size: 11px; padding: 8px; width: auto; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 8px; }
-  .nav button.active { color: var(--accent); }
-  .nav button:hover { background: var(--input-bg); color: var(--text); }
-  .nav .icon { font-size: 20px; }
-
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-  .modal.open { display: flex; }
-  .modal-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 380px; max-height: 85vh; overflow-y: auto; }
-  .modal-card h2 { font-size: 18px; margin-bottom: 20px; }
-  .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
-  .modal-actions button { flex: 1; padding: 12px; font-size: 14px; }
-  .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  .btn-cancel:hover { background: var(--border); color: var(--text); }
-
-  .notif { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-  .notif:last-child { border-bottom: none; }
-  .notif .emoji { font-size: 22px; }
-  .notif .text { font-size: 13px; line-height: 1.4; }
-  .notif .time { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-  .search-box { width: 100%; margin-bottom: 16px; }
+  :root { --bg1:#0f172a; --bg2:#1e293b; --panel:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; --input:#0f172a; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,'Segoe UI',Roboto,sans-serif; }
+  body { min-height:100vh; background:linear-gradient(135deg,var(--bg1),var(--bg2)); display:flex; align-items:center; justify-content:center; color:var(--text); padding:20px; }
+  .card { width:100%; max-width:420px; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+  .logo { font-size:22px; font-weight:700; margin-bottom:30px; }
+  .logo span { color:var(--accent); }
+  h1 { font-size:20px; margin-bottom:6px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:28px; }
+  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  input { width:100%; padding:12px 14px; background:var(--input); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:15px; margin-bottom:18px; outline:none; }
+  input:focus { border-color:var(--accent); }
+  button { width:100%; padding:13px; background:var(--accent); color:#0f172a; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; }
+  button:hover { background:#7dd3fc; }
+  #pinScreen { display:none; width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; text-align:center; }
+  #pinScreen h2 { font-size:18px; margin-bottom:8px; }
+  #pinScreen p { color:var(--muted); font-size:13px; margin-bottom:26px; }
+  .pin-dots { display:flex; justify-content:center; gap:14px; margin-bottom:30px; }
+  .pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--border); }
+  .pin-dot.filled { background:var(--accent); border-color:var(--accent); }
+  .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .keypad button { padding:18px; font-size:18px; font-weight:600; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:12px; }
+  .keypad button:hover { background:var(--border); }
+  .keypad .empty { visibility:hidden; }
+  .app { display:none; width:100%; max-width:480px; background:var(--panel); border-radius:16px; padding:28px; border:1px solid var(--border); }
+  .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .greeting { font-size:13px; color:var(--muted); }
+  .greeting b { color:var(--text); display:block; font-size:17px; margin-top:2px; }
+  .logout { background:transparent; border:1px solid var(--border); color:var(--muted); padding:7px 12px; width:auto; font-size:12px; border-radius:8px; }
+  .balance-box { background:linear-gradient(135deg,#0ea5e9,#2563eb); border-radius:16px; padding:24px; margin-bottom:18px; color:#fff; }
+  .balance-box .lbl { font-size:12px; opacity:.85; margin-bottom:6px; }
+  .balance-box .amt { font-size:34px; font-weight:700; letter-spacing:-1px; }
+  .balance-box .acct { font-size:12px; opacity:.85; margin-top:12px; }
+  .tx { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+  .tx:last-child { border-bottom:none; }
+  .tx .name { font-size:14px; }
+  .tx .date { font-size:11px; color:var(--muted); margin-top:2px; }
+  .tx .amount { font-size:14px; font-weight:600; }
+  .pos { color:#4ade80; } .neg { color:#f87171; }
+  .tx-title { font-size:13px; color:var(--muted); margin-bottom:10px; }
 </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-
-<!-- LOGIN -->
 <div class="card" id="loginCard">
   <div class="logo">🏦 Kings<span>gate</span></div>
   <h1>Welcome back</h1>
@@ -144,7 +57,6 @@
   <button onclick="login()">Sign in</button>
 </div>
 
-<!-- PIN -->
 <div id="pinScreen">
   <h2>Enter your PIN</h2>
   <p>Enter your 4-digit PIN</p>
@@ -159,231 +71,36 @@
   </div>
 </div>
 
-<!-- APP -->
 <div class="app" id="app">
-  <div class="page active" id="page-home">
-    <div class="topbar">
-      <div class="greeting">Welcome back<b id="userName">Mary Ferro</b></div>
-      <div class="top-actions">
-        <button class="icon-btn" onclick="openNotif()">🔔<span class="bell-dot"></span></button>
-        <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
-      </div>
-    </div>
-    <div class="balance-box">
-      <div class="lbl">Current account</div>
-      <div class="amt" id="balanceAmt">€12,450.00</div>
-      <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
-    </div>
-    <div class="actions">
-      <button onclick="openSend()">💸 Send Money</button>
-    </div>
-    <div class="section-head">
-      <div class="title">Recent transactions</div>
-      <button class="link" onclick="showPage('statement')">See all →</button>
-    </div>
-    <div id="txList">
-      <div class="tx"><div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div><div class="amount pos">+€4,200.00</div></div>
-      <div class="tx"><div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div><div class="amount neg">−€89.99</div></div>
-      <div class="tx"><div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div><div class="amount neg">−€6.45</div></div>
-      <div class="tx"><div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div><div class="amount pos">+€250.00</div></div>
-      <div class="tx"><div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div><div class="amount neg">−€15.99</div></div>
-    </div>
+  <div class="topbar">
+    <div class="greeting">Welcome back<b>Mary Ferro</b></div>
+    <button class="logout" onclick="logout()">Log out</button>
   </div>
-
-  <div class="page" id="page-pots">
-    <div class="topbar">
-      <div class="greeting">Savings<b>Manage your pots</b></div>
-      <div class="top-actions">
-        <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
-      </div>
-    </div>
-    <div class="pot">
-      <div class="pot-name">Current account</div>
-      <div class="pot-amt" id="potCurrent">€12,450.00</div>
-    </div>
-    <div class="pot">
-      <div class="pot-name">Savings pot</div>
-      <div class="pot-amt" id="potSavings">€1,200.00</div>
-      <div class="pot-actions">
-        <button onclick="openMove('toSavings')">→ Move to Savings</button>
-        <button onclick="openMove('toCurrent')">← Move to Current</button>
-      </div>
-    </div>
+  <div class="balance-box">
+    <div class="lbl">Current account</div>
+    <div class="amt" id="balanceAmt">€0.00</div>
+    <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
   </div>
-
-  <div class="page" id="page-chart">
-    <div class="topbar">
-      <div class="greeting">Spending<b>This month</b></div>
-      <div class="top-actions">
-        <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <div class="donut">
-        <div class="donut-label">
-          <div class="lbl">Spent</div>
-          <div class="amt">€1,287</div>
-        </div>
-      </div>
-    </div>
-    <div class="legend">
-      <div class="item"><div class="left"><span class="swatch" style="background:#38bdf8"></span>Food & Drink</div><div class="val">€465</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#f59e0b"></span>Transport</div><div class="val">€322</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#a78bfa"></span>Shopping</div><div class="val">€250</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#4ade80"></span>Bills</div><div class="val">€250</div></div>
-    </div>
-  </div>
-
-  <div class="page" id="page-card">
-    <div class="topbar">
-      <div class="greeting">Your card<b>Debit • EUR</b></div>
-      <div class="top-actions">
-        <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
-      </div>
-    </div>
-    <div class="debit-card">
-      <div class="brand">🏦 Kings<span>gate</span></div>
-      <div class="visa">VISA</div>
-      <div class="chip"></div>
-      <div class="number" id="cardNumber">4821 •••• •••• 7391</div>
-      <div class="bottom">
-        <div><div class="lbl">Card Holder</div><div class="val" id="cardHolder">MARY FERRO</div></div>
-        <div><div class="lbl">Expires</div><div class="val">09/29</div></div>
-        <div><div class="lbl">CVV</div><div class="val">•••</div></div>
-      </div>
-    </div>
-    <div class="card-info">
-      <button onclick="alert('Card frozen ❄️ (visual only)')">❄️ Freeze</button>
-      <button onclick="alert('Just a joke — nothing happened 😄')">👁️ Show details</button>
-    </div>
-  </div>
-
-  <div class="page" id="page-statement">
-    <div class="topbar">
-      <div class="greeting">Statement<b>All transactions</b></div>
-      <div class="top-actions">
-        <button class="logout icon-btn" onclick="logout()" title="Log out">⏻</button>
-      </div>
-    </div>
-    <input class="search-box" id="txSearch" placeholder="🔍 Search transactions..." oninput="filterTx()">
-    <div id="statementList"></div>
-  </div>
-
-  <div class="nav">
-    <button class="active" id="navHome" onclick="showPage('home')"><span class="icon">🏠</span>Home</button>
-    <button id="navPots" onclick="showPage('pots')"><span class="icon">💰</span>Pots</button>
-    <button id="navChart" onclick="showPage('chart')"><span class="icon">📊</span>Chart</button>
-    <button id="navCard" onclick="showPage('card')"><span class="icon">💳</span>Card</button>
-  </div>
-</div>
-
-<div class="modal" id="sendModal">
-  <div class="modal-card">
-    <h2>Send money</h2>
-    <label>Recipient</label>
-    <input id="sendTo" type="text" placeholder="e.g. Alex Smith" autocomplete="off">
-    <label>Amount (€)</label>
-    <input id="sendAmount" type="number" placeholder="50.00" step="0.01" min="0">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('sendModal')">Cancel</button>
-      <button onclick="confirmSend()">Send</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="moveModal">
-  <div class="modal-card">
-    <h2 id="moveTitle">Move money</h2>
-    <label>Amount (€)</label>
-    <input id="moveAmount" type="number" placeholder="50.00" step="0.01" min="0">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('moveModal')">Cancel</button>
-      <button onclick="confirmMove()">Move</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="notifModal">
-  <div class="modal-card">
-    <h2>🔔 Notifications</h2>
-    <div class="notif"><div class="emoji">💸</div><div><div class="text"><b>€6.45</b> spent at Pret A Manger</div><div class="time">2 minutes ago</div></div></div>
-    <div class="notif"><div class="emoji">💰</div><div><div class="text">Salary of <b>€4,200</b> received</div><div class="time">Yesterday</div></div></div>
-    <div class="notif"><div class="emoji">🔒</div><div><div class="text">New login from Chrome on Windows</div><div class="time">2 days ago</div></div></div>
-    <div class="notif"><div class="emoji">🎉</div><div><div class="text">You set up a Savings pot!</div><div class="time">3 days ago</div></div></div>
-    <div class="modal-actions">
-      <button onclick="closeModal('notifModal')">Close</button>
-    </div>
-  </div>
+  <div class="tx-title">Recent transactions</div>
+  <div class="tx"><div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div><div class="amount pos">+€4,200.00</div></div>
+  <div class="tx"><div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div><div class="amount neg">−€89.99</div></div>
+  <div class="tx"><div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div><div class="amount neg">−€6.45</div></div>
+  <div class="tx"><div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div><div class="amount pos">+€250.00</div></div>
+  <div class="tx"><div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div><div class="amount neg">−€15.99</div></div>
 </div>
 
 <script>
+  const PASSWORD = ['R','o','d','d','y','l','i','z','z','y','2','0','2','1'].join('');
+  const PIN = '5050';
   const START_BALANCE = 12450.00;
-  const START_SAVINGS = 1200.00;
 
-  let balance = START_BALANCE;
-  let savings = START_SAVINGS;
-  let pin = '5050';
   let enteredPin = '';
-  let moveDirection = 'toSavings';
-
-  const allTx = [
-    { name: 'Salary — Acme Ltd', date: 'Oct 12, 2026', amt: 4200.00 },
-    { name: 'Tesco', date: 'Oct 11, 2026', amt: -89.99 },
-    { name: 'Pret A Manger', date: 'Oct 10, 2026', amt: -6.45 },
-    { name: 'Transfer from Alex', date: 'Oct 9, 2026', amt: 250.00 },
-    { name: 'TfL Travel', date: 'Oct 8, 2026', amt: -15.99 },
-    { name: 'Apple Store', date: 'Oct 7, 2026', amt: -1299.00 },
-    { name: "Sainsbury's", date: 'Oct 6, 2026', amt: -54.20 },
-    { name: 'Spotify', date: 'Oct 5, 2026', amt: -9.99 },
-    { name: 'British Gas', date: 'Oct 4, 2026', amt: -120.00 },
-    { name: 'Amazon', date: 'Oct 3, 2026', amt: -34.50 },
-    { name: 'Costa Coffee', date: 'Oct 2, 2026', amt: -4.75 },
-    { name: 'Boots', date: 'Oct 1, 2026', amt: -18.30 },
-    { name: 'Netflix', date: 'Sep 30, 2026', amt: -15.99 },
-    { name: 'Uber', date: 'Sep 29, 2026', amt: -22.40 },
-    { name: 'Vodafone', date: 'Sep 28, 2026', amt: -25.00 },
-    { name: 'John Lewis', date: 'Sep 27, 2026', amt: -89.99 },
-    { name: 'Greggs', date: 'Sep 26, 2026', amt: -3.60 },
-    { name: 'IKEA', date: 'Sep 25, 2026', amt: -145.00 },
-    { name: 'Deliveroo', date: 'Sep 24, 2026', amt: -28.75 },
-    { name: 'Water Bill', date: 'Sep 23, 2026', amt: -45.00 },
-    { name: 'H&M', date: 'Sep 22, 2026', amt: -56.99 },
-    { name: 'Shell Petrol', date: 'Sep 21, 2026', amt: -68.40 },
-    { name: 'Argos', date: 'Sep 20, 2026', amt: -42.99 },
-    { name: 'Wetherspoon', date: 'Sep 19, 2026', amt: -31.20 },
-    { name: 'Gym Membership', date: 'Sep 18, 2026', amt: -45.00 },
-    { name: 'Cinema', date: 'Sep 17, 2026', amt: -14.50 },
-    { name: "Nando's", date: 'Sep 16, 2026', amt: -22.80 },
-    { name: 'Post Office', date: 'Sep 15, 2026', amt: -8.75 },
-    { name: 'TK Maxx', date: 'Sep 14, 2026', amt: -39.99 },
-    { name: 'Bakery', date: 'Sep 13, 2026', amt: -5.20 }
-  ];
 
   const fmt = n => '€' + n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  function animateTo(el, to, from = 0) {
-    let start = from, end = to, dur = 600, t0 = null;
-    function step(ts) {
-      if (!t0) t0 = ts;
-      const p = Math.min((ts - t0) / dur, 1);
-      el.textContent = fmt(start + (end - start) * p);
-      if (p < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  function toggleTheme() {
-    document.body.classList.toggle('light');
-    const light = document.body.classList.contains('light');
-    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
-    localStorage.setItem('fb_theme', light ? 'light' : 'dark');
-  }
-
   function login() {
     const pass = document.getElementById('passInput').value;
-    // password check
-    const expected = ['R','o','d','d','y','l','i','z','z','y','2','0','2','1'].join('');
-    if (pass !== expected) { alert('Incorrect password.'); return; }
+    if (pass !== PASSWORD) { alert('Incorrect password.'); return; }
     enteredPin = '';
     updatePinDots();
     document.getElementById('loginCard').style.display = 'none';
@@ -401,7 +118,7 @@
     for (let i = 0; i < 4; i++) document.getElementById('d' + i).classList.toggle('filled', i < enteredPin.length);
   }
   function checkPin() {
-    if (enteredPin !== pin) {
+    if (enteredPin !== PIN) {
       alert('Wrong PIN.');
       enteredPin = '';
       updatePinDots();
@@ -412,16 +129,11 @@
 
     let acct = localStorage.getItem('fb_acct');
     if (!acct) { acct = Math.floor(1000 + Math.random() * 9000) + ''; localStorage.setItem('fb_acct', acct); }
-    let card4 = localStorage.getItem('fb_card4');
-    if (!card4) { card4 = Math.floor(1000 + Math.random() * 9000) + ''; localStorage.setItem('fb_card4', card4); }
     document.getElementById('acctNum').textContent = '•••• •••• •••• ' + acct;
-    document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
 
-    animateTo(document.getElementById('balanceAmt'), balance);
-    document.getElementById('potCurrent').textContent = fmt(balance);
-    document.getElementById('potSavings').textContent = fmt(savings);
-    saveState();
-    buildStatement();
+    let bal = localStorage.getItem('fb_balance_v3');
+    if (bal === null) bal = START_BALANCE; else bal = parseFloat(bal);
+    animateTo(document.getElementById('balanceAmt'), bal);
   }
 
   function logout() {
@@ -431,42 +143,20 @@
     document.getElementById('app').style.display = 'none';
     document.getElementById('pinScreen').style.display = 'none';
     document.getElementById('loginCard').style.display = 'block';
-    showPage('home');
   }
 
-  function showPage(p) {
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    document.getElementById('page-' + p).classList.add('active');
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    const navId = 'nav' + p.charAt(0).toUpperCase() + p.slice(1);
-    const nb = document.getElementById(navId);
-    if (nb) nb.classList.add('active');
+  function animateTo(el, to) {
+    let from = 0, dur = 600, t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      el.textContent = fmt(from + (to - from) * p);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   }
 
-  function openSend() { document.getElementById('sendModal').classList.add('open'); }
-  function openMove(dir) {
-    moveDirection = dir;
-    document.getElementById('moveTitle').textContent = dir === 'toSavings' ? 'Move to Savings' : 'Move to Current';
-    document.getElementById('moveModal').classList.add('open');
-  }
-  function openNotif() { document.getElementById('notifModal').classList.add('open'); }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-    document.getElementById('sendTo').value = '';
-    document.getElementById('sendAmount').value = '';
-    document.getElementById('moveAmount').value = '';
-  }
-
-  function confirmSend() {
-    const to = document.getElementById('sendTo').value.trim();
-    const amt = parseFloat(document.getElementById('sendAmount').value);
-    if (!to || !amt || amt <= 0) { alert('Enter a recipient and amount.'); return; }
-    if (amt > balance) { alert('Not enough funds.'); return; }
-    balance -= amt;
-    animateTo(document.getElementById('balanceAmt'), balance, balance + amt);
-    document.getElementById('potCurrent').textContent = fmt(balance);
-    saveState();
-    const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    const newTx = document.createElement('div');
-    newTx.className = 'tx';
-    newTx.innerHTML = '<div><div class="name">Sent to ' + to + '</div><div class="date">' + dateStr + '</div></div><div class
+  window.onload = () => {};
+</script>
+</body>
+</html>

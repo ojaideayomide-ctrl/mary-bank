@@ -102,6 +102,11 @@
   .notif .text { font-size:13px; line-height:1.4; }
   .notif .time { font-size:11px; color:var(--muted); margin-top:4px; }
   .search-box { width:100%; margin-bottom:16px; }
+  /* TOAST */
+  .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--panel); border:1px solid var(--border); color:var(--text); padding:14px 22px; border-radius:12px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); opacity:0; transition:all .3s; z-index:200; max-width:90vw; text-align:center; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.success { border-color:#4ade80; }
+  .toast.error { border-color:#f87171; }
 </style>
 </head>
 <body>
@@ -234,11 +239,18 @@
   </div>
 </div>
 
+<!-- SEND MONEY — UK TRANSFER FORM -->
 <div class="modal" id="sendModal">
   <div class="modal-card">
-    <h2>Send money</h2>
-    <label>Recipient</label>
+    <h2>New transfer</h2>
+    <label>Recipient name</label>
     <input id="sendTo" type="text" placeholder="e.g. Alex Smith" autocomplete="off">
+    <label>Sort code</label>
+    <input id="sendSort" type="text" placeholder="12-34-56" maxlength="8" inputmode="numeric">
+    <label>Account number</label>
+    <input id="sendAcct" type="text" placeholder="12345678" maxlength="8" inputmode="numeric">
+    <label>Reference</label>
+    <input id="sendRef" type="text" placeholder="e.g. Rent" maxlength="18" autocomplete="off">
     <label>Amount (€)</label>
     <input id="sendAmount" type="number" placeholder="50.00" step="0.01" min="0">
     <div class="modal-actions">
@@ -270,6 +282,8 @@
     <div class="modal-actions"><button onclick="closeModal('notifModal')">Close</button></div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
   const PASSWORD = ['R','o','d','d','y','l','i','z','z','y','2','0','2','1'].join('');
@@ -329,6 +343,14 @@
     requestAnimationFrame(step);
   }
 
+  function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + (type || '');
+    clearTimeout(window._toastT);
+    window._toastT = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2600);
+  }
+
   function toggleTheme() {
     document.body.classList.toggle('light');
     const light = document.body.classList.contains('light');
@@ -338,7 +360,7 @@
 
   function login() {
     const pass = document.getElementById('passInput').value;
-    if (pass !== PASSWORD) { alert('Incorrect password.'); return; }
+    if (pass !== PASSWORD) { toast('Incorrect password.', 'error'); return; }
     enteredPin = '';
     updatePinDots();
     document.getElementById('loginCard').style.display = 'none';
@@ -356,7 +378,7 @@
     for (let i = 0; i < 4; i++) document.getElementById('d' + i).classList.toggle('filled', i < enteredPin.length);
   }
   function checkPin() {
-    if (enteredPin !== PIN) { alert('Wrong PIN.'); enteredPin = ''; updatePinDots(); return; }
+    if (enteredPin !== PIN) { toast('Wrong PIN.', 'error'); enteredPin = ''; updatePinDots(); return; }
     document.getElementById('pinScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     sessionStorage.setItem('fb_loggedin', '1');
@@ -377,6 +399,7 @@
     document.getElementById('potCurrent').textContent = fmt(balance);
     document.getElementById('potSavings').textContent = fmt(savings);
     buildStatement();
+    toast('Welcome back, Mary 👋', 'success');
   }
 
   function logout() {
@@ -408,37 +431,56 @@
   function openNotif() { document.getElementById('notifModal').classList.add('open'); }
   function closeModal(id) {
     document.getElementById(id).classList.remove('open');
-    document.getElementById('sendTo').value = '';
-    document.getElementById('sendAmount').value = '';
-    document.getElementById('moveAmount').value = '';
+    ['sendTo','sendSort','sendAcct','sendRef','sendAmount','moveAmount'].forEach(f => {
+      const el = document.getElementById(f);
+      if (el) el.value = '';
+    });
   }
 
   function confirmSend() {
     const to = document.getElementById('sendTo').value.trim();
+    const sort = document.getElementById('sendSort').value.trim();
+    const acct = document.getElementById('sendAcct').value.trim();
+    const ref = document.getElementById('sendRef').value.trim();
     const amt = parseFloat(document.getElementById('sendAmount').value);
-    if (!to || !amt || amt <= 0) { alert('Enter a recipient and amount.'); return; }
-    if (amt > balance) { alert('Not enough funds.'); return; }
+
+    if (!to) { toast('Enter recipient name.', 'error'); return; }
+    if (!/^\d{2}-\d{2}-\d{2}$/.test(sort)) { toast('Sort code must be 12-34-56.', 'error'); return; }
+    if (!/^\d{8}$/.test(acct)) { toast('Account number must be 8 digits.', 'error'); return; }
+    if (!amt || amt <= 0) { toast('Enter a valid amount.', 'error'); return; }
+    if (amt > balance) { toast('Not enough funds.', 'error'); return; }
+
     balance -= amt;
     animateTo(document.getElementById('balanceAmt'), balance, balance + amt);
     document.getElementById('potCurrent').textContent = fmt(balance);
     saveState();
+
     const dateStr = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const label = ref ? ('Sent to ' + to + ' — ' + ref) : ('Sent to ' + to);
     const newTx = document.createElement('div');
     newTx.className = 'tx';
-    newTx.innerHTML = '<div><div class="name">Sent to ' + to + '</div><div class="date">' + dateStr + '</div></div><div class="amount neg">−' + fmt(amt) + '</div>';
+    newTx.innerHTML = '<div><div class="name">' + label + '</div><div class="date">' + dateStr + '</div></div><div class="amount neg">−' + fmt(amt) + '</div>';
     document.getElementById('txList').insertBefore(newTx, document.getElementById('txList').firstChild);
+
+    // add to statement too
+    allTx.unshift({ name: label, date: dateStr, amt: -amt });
+    buildStatement();
+
     closeModal('sendModal');
+    toast(fmt(amt) + ' sent to ' + to, 'success');
   }
 
   function confirmMove() {
     const amt = parseFloat(document.getElementById('moveAmount').value);
-    if (!amt || amt <= 0) { alert('Enter an amount.'); return; }
+    if (!amt || amt <= 0) { toast('Enter an amount.', 'error'); return; }
     if (moveDirection === 'toSavings') {
-      if (amt > balance) { alert('Not enough in Current.'); return; }
+      if (amt > balance) { toast('Not enough in Current.', 'error'); return; }
       balance -= amt; savings += amt;
+      toast(fmt(amt) + ' moved to Savings', 'success');
     } else {
-      if (amt > savings) { alert('Not enough in Savings.'); return; }
+      if (amt > savings) { toast('Not enough in Savings.', 'error'); return; }
       savings -= amt; balance += amt;
+      toast(fmt(amt) + ' moved to Current', 'success');
     }
     document.getElementById('balanceAmt').textContent = fmt(balance);
     document.getElementById('potCurrent').textContent = fmt(balance);
@@ -467,7 +509,12 @@
     const q = document.getElementById('txSearch').value.toLowerCase();
     const list = document.getElementById('statementList');
     list.innerHTML = '';
-    allTx.filter(t => t.name.toLowerCase().includes(q)).forEach(t => {
+    const filtered = allTx.filter(t => t.name.toLowerCase().includes(q));
+    if (filtered.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:var(--muted);padding:30px 0;">No transactions found</p>';
+      return;
+    }
+    filtered.forEach(t => {
       const row = document.createElement('div');
       row.className = 'tx';
       row.innerHTML = '<div><div class="name">' + t.name + '</div><div class="date">' + t.date + '</div></div><div class="amount ' + (t.amt > 0 ? 'pos' : 'neg') + '">' + (t.amt > 0 ? '+' : '−') + fmt(Math.abs(t.amt)) + '</div>';

@@ -5,116 +5,145 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kingsgate Bank</title>
 <style>
-  :root { --bg1:#0f172a; --bg2:#1e293b; --panel:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; --input:#0f172a; }
-  body.light { --bg1:#f1f5f9; --bg2:#e2e8f0; --panel:#fff; --border:#cbd5e1; --text:#0f172a; --muted:#64748b; --accent:#0284c7; --input:#f8fafc; }
-  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,'Segoe UI',Roboto,sans-serif; }
-  body { min-height:100vh; background:linear-gradient(135deg,var(--bg1),var(--bg2)); display:flex; align-items:center; justify-content:center; color:var(--text); padding:20px; transition:background .3s,color .3s; }
-  .theme-toggle { position:fixed; top:16px; right:16px; background:var(--panel); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:10px; font-size:16px; cursor:pointer; width:auto; z-index:50; }
-  .card { width:100%; max-width:420px; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
-  .logo { font-size:22px; font-weight:700; margin-bottom:30px; }
-  .logo span { color:var(--accent); }
-  h1 { font-size:20px; margin-bottom:6px; }
-  .sub { color:var(--muted); font-size:14px; margin-bottom:28px; }
-  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
-  input { width:100%; padding:12px 14px; background:var(--input); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:15px; margin-bottom:18px; outline:none; }
-  input:focus { border-color:var(--accent); }
-  button { width:100%; padding:13px; background:var(--accent); color:#0f172a; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; }
-  button:hover { background:#7dd3fc; }
-  #pinScreen { display:none; width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; text-align:center; }
+  :root {
+    --bg: #0a0f1e;
+    --panel: #111827;
+    --card: #1a2234;
+    --card-2: #232d42;
+    --border: #2a3548;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #10b981;
+    --accent-2: #34d399;
+    --danger: #ef4444;
+    --navy: #0f172a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,'Segoe UI',Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
+  body { min-height:100vh; background:var(--bg); display:flex; align-items:flex-start; justify-content:center; color:var(--text); padding:20px; }
+
+  /* LOGIN */
+  .login-card { width:100%; max-width:420px; background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; margin-top:40px; }
+  .login-logo { font-size:22px; font-weight:700; margin-bottom:30px; display:flex; align-items:center; gap:10px; }
+  .login-logo .mark { width:36px; height:36px; border-radius:10px; background:var(--accent); display:flex; align-items:center; justify-content:center; color:var(--navy); font-weight:800; font-size:16px; }
+  .login-logo span { color:var(--accent); }
+  .login-card h1 { font-size:20px; margin-bottom:6px; }
+  .login-card .sub { color:var(--muted); font-size:14px; margin-bottom:28px; }
+  .login-card label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  .login-card input { width:100%; padding:13px 15px; background:var(--bg); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:15px; margin-bottom:18px; outline:none; }
+  .login-card input:focus { border-color:var(--accent); }
+  .login-card button { width:100%; padding:14px; background:var(--accent); color:var(--navy); border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; }
+  .login-card button:hover { background:var(--accent-2); }
+
+  /* PIN */
+  #pinScreen { display:none; width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; text-align:center; margin-top:40px; }
   #pinScreen h2 { font-size:18px; margin-bottom:8px; }
   #pinScreen p { color:var(--muted); font-size:13px; margin-bottom:26px; }
   .pin-dots { display:flex; justify-content:center; gap:14px; margin-bottom:30px; }
   .pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--border); }
   .pin-dot.filled { background:var(--accent); border-color:var(--accent); }
   .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-  .keypad button { padding:18px; font-size:18px; font-weight:600; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:12px; }
+  .keypad button { padding:18px; font-size:18px; font-weight:600; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:14px; cursor:pointer; }
   .keypad button:hover { background:var(--border); }
   .keypad .empty { visibility:hidden; }
-  .app { display:none; width:100%; max-width:480px; background:var(--panel); border-radius:16px; padding:28px; border:1px solid var(--border); }
-  .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:10px; }
-  .greeting { font-size:13px; color:var(--muted); flex:1; }
-  .greeting b { color:var(--text); display:block; font-size:17px; margin-top:2px; }
-  .top-actions { display:flex; gap:8px; align-items:center; }
-  .icon-btn { background:transparent; border:1px solid var(--border); color:var(--muted); width:36px; height:36px; border-radius:10px; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; padding:0; }
-  .icon-btn:hover { background:var(--border); color:var(--text); }
-  .bell-dot { position:absolute; top:6px; right:6px; width:8px; height:8px; background:#ef4444; border-radius:50%; }
+
+  /* APP */
+  .app { display:none; width:100%; max-width:440px; }
   .page { display:none; }
   .page.active { display:block; }
-  .balance-box { background:linear-gradient(135deg,#0ea5e9,#2563eb); border-radius:16px; padding:24px; margin-bottom:18px; color:#fff; }
-  .balance-box .lbl { font-size:12px; opacity:.85; margin-bottom:6px; }
-  .balance-box .amt { font-size:34px; font-weight:700; letter-spacing:-1px; }
-  .balance-box .acct { font-size:12px; opacity:.85; margin-top:12px; }
-  .actions { display:flex; gap:10px; margin-bottom:22px; }
-  .actions button { padding:12px; font-size:14px; }
-  .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .section-head .title { font-size:13px; color:var(--muted); }
-  .section-head .link { font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; width:auto; padding:0; }
-  .section-head .link:hover { text-decoration:underline; }
-  .tx { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-top:8px; }
+  .user { display:flex; align-items:center; gap:12px; }
+  .avatar { width:44px; height:44px; border-radius:12px; background:var(--accent); color:var(--navy); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; }
+  .user .hi { font-size:13px; color:var(--muted); }
+  .user .nm { font-size:16px; font-weight:700; display:flex; align-items:center; gap:6px; }
+  .user .nm .check { color:var(--accent); font-size:13px; }
+  .bell { position:relative; width:42px; height:42px; border-radius:12px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; }
+  .bell .dot { position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:10px; font-weight:700; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+
+  .bal-label { font-size:14px; color:var(--muted); margin-bottom:6px; }
+  .bal-num { font-size:44px; font-weight:800; letter-spacing:-1.5px; cursor:pointer; user-select:none; }
+  .bal-num:active { opacity:.7; }
+
+  .pills { display:flex; gap:12px; margin:24px 0; }
+  .pill { flex:1; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; align-items:center; gap:12px; }
+  .pill .ic { width:36px; height:36px; border-radius:10px; background:var(--navy); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:16px; flex-shrink:0; }
+  .pill .lbl { font-size:11px; color:var(--muted); margin-bottom:2px; }
+  .pill .val { font-size:15px; font-weight:700; }
+
+  .actions { display:flex; gap:12px; margin-bottom:28px; }
+  .actions button { flex:1; padding:16px; border-radius:16px; border:none; font-size:15px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-deposit { background:var(--accent); color:var(--navy); }
+  .btn-deposit:hover { background:var(--accent-2); }
+  .btn-withdraw { background:var(--card); color:var(--text); border:1px solid var(--border) !important; }
+  .btn-withdraw:hover { background:var(--border); }
+
+  .tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  .tile { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px 8px; text-align:center; cursor:pointer; }
+  .tile:hover { background:var(--card-2); }
+  .tile .ic { width:40px; height:40px; margin:0 auto 8px; border-radius:12px; background:var(--accent); color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .tile .lbl { font-size:11px; color:var(--muted); font-weight:600; }
+
+  .currencies { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
+  .cur-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; }
+  .cur-card .top-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .cur-card .flag { font-size:20px; }
+  .cur-card .spark { color:var(--accent); font-size:14px; letter-spacing:-2px; }
+  .cur-card .code { font-size:13px; color:var(--muted); font-weight:600; margin-bottom:4px; }
+  .cur-card .amt { font-size:20px; font-weight:800; }
+  .cur-card .name { font-size:10px; color:var(--muted); margin-top:4px; }
+
+  .sec-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .sec-head .t { font-size:16px; font-weight:700; }
+  .sec-head .see { font-size:13px; color:var(--accent); cursor:pointer; background:none; border:none; padding:0; }
+
+  .tx { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
   .tx:last-child { border-bottom:none; }
-  .tx .name { font-size:14px; }
-  .tx .date { font-size:11px; color:var(--muted); margin-top:2px; }
-  .tx .amount { font-size:14px; font-weight:600; }
+  .tx .name { font-size:14px; font-weight:600; }
+  .tx .date { font-size:11px; color:var(--muted); margin-top:3px; }
+  .tx .amount { font-size:14px; font-weight:700; }
   .pos { color:#4ade80; } .neg { color:#f87171; }
-  .pot { background:var(--input); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:14px; }
-  .pot .pot-name { font-size:13px; color:var(--muted); margin-bottom:6px; }
-  .pot .pot-amt { font-size:26px; font-weight:700; margin-bottom:14px; }
-  .pot .pot-actions { display:flex; gap:8px; }
-  .pot .pot-actions button { font-size:13px; padding:10px; }
-  .chart-wrap { display:flex; justify-content:center; margin:20px 0 30px; }
-  .donut { width:200px; height:200px; border-radius:50%; background:conic-gradient(#38bdf8 0deg 130deg,#f59e0b 130deg 220deg,#a78bfa 220deg 290deg,#4ade80 290deg 360deg); position:relative; display:flex; align-items:center; justify-content:center; }
-  .donut::after { content:''; position:absolute; width:130px; height:130px; border-radius:50%; background:var(--panel); }
-  .donut-label { position:relative; z-index:2; text-align:center; }
-  .donut-label .lbl { font-size:11px; color:var(--muted); }
-  .donut-label .amt { font-size:20px; font-weight:700; margin-top:2px; }
-  .legend { display:flex; flex-direction:column; gap:10px; }
-  .legend .item { display:flex; align-items:center; justify-content:space-between; font-size:13px; }
-  .legend .left { display:flex; align-items:center; gap:10px; }
-  .legend .swatch { width:12px; height:12px; border-radius:4px; }
-  .legend .val { color:var(--muted); font-weight:600; }
-  .debit-card { background:linear-gradient(135deg,#1e3a8a,#0f172a); border:1px solid var(--border); border-radius:18px; padding:24px; margin-bottom:22px; position:relative; color:#e2e8f0; }
-  .debit-card .brand { font-size:14px; font-weight:700; margin-bottom:30px; }
-  .debit-card .brand span { color:#38bdf8; }
-  .debit-card .chip { width:40px; height:30px; background:linear-gradient(135deg,#fbbf24,#d97706); border-radius:6px; margin-bottom:16px; }
-  .debit-card .number { font-size:20px; letter-spacing:3px; margin-bottom:20px; font-family:'Courier New',monospace; }
-  .debit-card .bottom { display:flex; justify-content:space-between; font-size:11px; }
-  .debit-card .bottom .lbl { opacity:.6; margin-bottom:3px; text-transform:uppercase; letter-spacing:1px; }
-  .debit-card .bottom .val { font-size:13px; font-weight:600; }
-  .debit-card .visa { position:absolute; top:20px; right:24px; font-size:22px; font-style:italic; font-weight:800; }
-  .card-info { display:flex; gap:10px; }
-  .card-info button { font-size:13px; padding:10px; }
-  .nav { display:flex; justify-content:space-around; margin-top:22px; padding-top:16px; border-top:1px solid var(--border); }
-  .nav button { background:transparent; border:none; color:var(--muted); font-size:11px; padding:8px; width:auto; display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:8px; }
-  .nav button.active { color:var(--accent); }
-  .nav button:hover { background:var(--input); color:var(--text); }
-  .nav .icon { font-size:20px; }
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); align-items:center; justify-content:center; padding:20px; z-index:100; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { display:flex; justify-content:space-around; align-items:center; margin-top:24px; padding:14px 8px; background:var(--panel); border:1px solid var(--border); border-radius:22px; position:sticky; bottom:12px; }
+  .bottom-nav button { background:transparent; border:none; color:var(--muted); font-size:10px; padding:8px 12px; display:flex; flex-direction:column; align-items:center; gap:5px; border-radius:14px; cursor:pointer; font-weight:600; }
+  .bottom-nav button.active { color:var(--navy); background:var(--accent); }
+  .bottom-nav button .ic { font-size:18px; }
+
+  /* MODALS */
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); align-items:center; justify-content:center; padding:20px; z-index:100; }
   .modal.open { display:flex; }
-  .modal-card { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:28px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; }
-  .modal-card h2 { font-size:18px; margin-bottom:20px; }
-  .modal-actions { display:flex; gap:10px; margin-top:10px; }
-  .modal-actions button { flex:1; padding:12px; font-size:14px; }
-  .btn-cancel { background:transparent; border:1px solid var(--border); color:var(--muted); }
-  .btn-cancel:hover { background:var(--border); color:var(--text); }
+  .modal-card { background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:28px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; }
+  .modal-card h2 { font-size:18px; margin-bottom:6px; }
+  .modal-card .msub { font-size:12px; color:var(--muted); margin-bottom:20px; }
+  .modal-card label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .modal-card input, .modal-card select { width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:15px; margin-bottom:16px; outline:none; }
+  .modal-card input:focus { border-color:var(--accent); }
+  .modal-actions { display:flex; gap:10px; margin-top:8px; }
+  .modal-actions button { flex:1; padding:13px; font-size:14px; font-weight:700; border-radius:12px; cursor:pointer; border:none; }
+  .btn-primary { background:var(--accent); color:var(--navy); }
+  .btn-primary:hover { background:var(--accent-2); }
+  .btn-cancel { background:transparent; border:1px solid var(--border) !important; color:var(--muted); }
+
   .notif { display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); align-items:flex-start; }
   .notif:last-child { border-bottom:none; }
-  .notif .emoji { font-size:22px; }
-  .notif .text { font-size:13px; line-height:1.4; }
-  .notif .time { font-size:11px; color:var(--muted); margin-top:4px; }
-  .search-box { width:100%; margin-bottom:16px; }
+  .notif .em { font-size:22px; }
+  .notif .tx-t { font-size:13px; line-height:1.4; }
+  .notif .tm { font-size:11px; color:var(--muted); margin-top:4px; }
+
   /* TOAST */
-  .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--panel); border:1px solid var(--border); color:var(--text); padding:14px 22px; border-radius:12px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); opacity:0; transition:all .3s; z-index:200; max-width:90vw; text-align:center; }
+  .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--panel); border:1px solid var(--border); color:var(--text); padding:14px 22px; border-radius:14px; font-size:14px; font-weight:600; box-shadow:0 12px 40px rgba(0,0,0,.5); opacity:0; transition:all .3s; z-index:200; max-width:90vw; text-align:center; }
   .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
-  .toast.success { border-color:#4ade80; }
-  .toast.error { border-color:#f87171; }
+  .toast.success { border-color:var(--accent); }
+  .toast.error { border-color:var(--danger); }
+
+  .empty { text-align:center; color:var(--muted); padding:30px 0; font-size:13px; }
+  .search-box { width:100%; padding:12px 14px; background:var(--card); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:14px; margin-bottom:16px; outline:none; }
 </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-
-<div class="card" id="loginCard">
-  <div class="logo">🏦 Kings<span>gate</span></div>
+<div class="login-card" id="loginCard">
+  <div class="login-logo"><div class="mark">K</div>Kings<span>gate</span></div>
   <h1>Welcome back</h1>
   <p class="sub">Enter your password to continue</p>
   <label>Password</label>
@@ -138,148 +167,222 @@
 
 <div class="app" id="app">
 
+  <!-- HOME -->
   <div class="page active" id="page-home">
-    <div class="topbar">
-      <div class="greeting">Welcome back<b>Mary Ferro</b></div>
-      <div class="top-actions">
-        <button class="icon-btn" onclick="openNotif()">🔔<span class="bell-dot"></span></button>
-        <button class="icon-btn" onclick="logout()" title="Log out">⏻</button>
+    <div class="top">
+      <div class="user">
+        <div class="avatar" id="avatar">MF</div>
+        <div>
+          <div class="hi">Welcome,</div>
+          <div class="nm">Mary Ferro <span class="check">✔</span></div>
+        </div>
+      </div>
+      <div class="bell" onclick="openNotif()">🔔<span class="dot">2</span></div>
+    </div>
+
+    <div class="bal-label">Total balance</div>
+    <div class="bal-num" id="balanceAmt" onclick="tapBalance()">£0.00</div>
+
+    <div class="pills">
+      <div class="pill">
+        <div class="ic">↓</div>
+        <div><div class="lbl">Avg Monthly</div><div class="val">£2,400.00</div></div>
+      </div>
+      <div class="pill">
+        <div class="ic">↑</div>
+        <div><div class="lbl">Expenses</div><div class="val">£1,287.00</div></div>
       </div>
     </div>
-    <div class="balance-box">
-      <div class="lbl">Current account</div>
-      <div class="amt" id="balanceAmt">€0.00</div>
-      <div class="acct" id="acctNum">•••• •••• •••• 4821</div>
+
+    <div class="actions">
+      <button class="btn-deposit" onclick="openDeposit()">Deposit ↓</button>
+      <button class="btn-withdraw" onclick="openWithdraw()">Withdraw ↑</button>
     </div>
-    <div class="actions"><button onclick="openSend()">💸 Send Money</button></div>
-    <div class="section-head">
-      <div class="title">Recent transactions</div>
-      <button class="link" onclick="showPage('statement')">See all →</button>
+
+    <div class="tiles">
+      <div class="tile" onclick="toast('Safe box — demo', 'success')"><div class="ic">🔒</div><div class="lbl">Safe</div></div>
+      <div class="tile" onclick="showPage('pots')"><div class="ic">💰</div><div class="lbl">Savings</div></div>
+      <div class="tile" onclick="toast('Bills — demo', 'success')"><div class="ic">📄</div><div class="lbl">Bills</div></div>
+      <div class="tile" onclick="showPage('card')"><div class="ic">💳</div><div class="lbl">Cards</div></div>
+    </div>
+
+    <div class="currencies">
+      <div class="cur-card">
+        <div class="top-row"><div class="flag">🇬🇧</div><div class="spark">⌁⌁⌁</div></div>
+        <div class="code">GBP</div>
+        <div class="amt" id="gbpAmt">£0.00</div>
+        <div class="name">British Pound</div>
+      </div>
+      <div class="cur-card">
+        <div class="top-row"><div class="flag">🇪🇺</div><div class="spark">⌁⌁⌁</div></div>
+        <div class="code">EUR</div>
+        <div class="amt" id="eurAmt">€0.00</div>
+        <div class="name">Euro</div>
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <div class="t">Transactions</div>
+      <button class="see" onclick="showPage('statement')">See all</button>
     </div>
     <div id="txList">
-      <div class="tx"><div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div><div class="amount pos">+€4,200.00</div></div>
-      <div class="tx"><div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div><div class="amount neg">−€89.99</div></div>
-      <div class="tx"><div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div><div class="amount neg">−€6.45</div></div>
-      <div class="tx"><div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div><div class="amount pos">+€250.00</div></div>
-      <div class="tx"><div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div><div class="amount neg">−€15.99</div></div>
+      <div class="tx"><div><div class="name">Salary — Acme Ltd</div><div class="date">Oct 12, 2026</div></div><div class="amount pos">+£4,200.00</div></div>
+      <div class="tx"><div><div class="name">Tesco</div><div class="date">Oct 11, 2026</div></div><div class="amount neg">−£89.99</div></div>
+      <div class="tx"><div><div class="name">Pret A Manger</div><div class="date">Oct 10, 2026</div></div><div class="amount neg">−£6.45</div></div>
+      <div class="tx"><div><div class="name">Transfer from Alex</div><div class="date">Oct 9, 2026</div></div><div class="amount pos">+£250.00</div></div>
+      <div class="tx"><div><div class="name">TfL Travel</div><div class="date">Oct 8, 2026</div></div><div class="amount neg">−£15.99</div></div>
     </div>
   </div>
 
+  <!-- POTS -->
   <div class="page" id="page-pots">
-    <div class="topbar">
-      <div class="greeting">Savings<b>Manage your pots</b></div>
-      <div class="top-actions"><button class="icon-btn" onclick="logout()">⏻</button></div>
+    <div class="top">
+      <div class="user"><div class="avatar">💰</div><div><div class="hi">Manage</div><div class="nm">Savings</div></div></div>
+      <div class="bell" onclick="logout()" style="font-size:16px;">⏻</div>
     </div>
-    <div class="pot">
-      <div class="pot-name">Current account</div>
-      <div class="pot-amt" id="potCurrent">€0.00</div>
+    <div class="pill" style="margin-bottom:14px; display:block; padding:20px;">
+      <div class="lbl">Current account</div>
+      <div style="font-size:26px;font-weight:800;margin-top:6px;" id="potCurrent">£0.00</div>
     </div>
-    <div class="pot">
-      <div class="pot-name">Savings pot</div>
-      <div class="pot-amt" id="potSavings">€0.00</div>
-      <div class="pot-actions">
-        <button onclick="openMove('toSavings')">→ Move to Savings</button>
-        <button onclick="openMove('toCurrent')">← Move to Current</button>
+    <div class="pill" style="margin-bottom:14px; display:block; padding:20px;">
+      <div class="lbl">Savings pot</div>
+      <div style="font-size:26px;font-weight:800;margin-top:6px;" id="potSavings">£0.00</div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="btn-primary" style="flex:1;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;" onclick="openMove('toSavings')">→ To Savings</button>
+        <button class="btn-withdraw" style="flex:1;padding:12px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;" onclick="openMove('toCurrent')">← To Current</button>
       </div>
     </div>
   </div>
 
-  <div class="page" id="page-chart">
-    <div class="topbar">
-      <div class="greeting">Spending<b>This month</b></div>
-      <div class="top-actions"><button class="icon-btn" onclick="logout()">⏻</button></div>
-    </div>
-    <div class="chart-wrap">
-      <div class="donut"><div class="donut-label"><div class="lbl">Spent</div><div class="amt">€1,287</div></div></div>
-    </div>
-    <div class="legend">
-      <div class="item"><div class="left"><span class="swatch" style="background:#38bdf8"></span>Food & Drink</div><div class="val">€465</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#f59e0b"></span>Transport</div><div class="val">€322</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#a78bfa"></span>Shopping</div><div class="val">€250</div></div>
-      <div class="item"><div class="left"><span class="swatch" style="background:#4ade80"></span>Bills</div><div class="val">€250</div></div>
-    </div>
-  </div>
-
+  <!-- CARD -->
   <div class="page" id="page-card">
-    <div class="topbar">
-      <div class="greeting">Your card<b>Debit • EUR</b></div>
-      <div class="top-actions"><button class="icon-btn" onclick="logout()">⏻</button></div>
+    <div class="top">
+      <div class="user"><div class="avatar">💳</div><div><div class="hi">Your</div><div class="nm">Card</div></div></div>
+      <div class="bell" onclick="logout()" style="font-size:16px;">⏻</div>
     </div>
-    <div class="debit-card">
-      <div class="brand">🏦 Kings<span>gate</span></div>
-      <div class="visa">VISA</div>
-      <div class="chip"></div>
-      <div class="number" id="cardNumber">4821 •••• •••• 7391</div>
-      <div class="bottom">
-        <div><div class="lbl">Card Holder</div><div class="val">MARY FERRO</div></div>
-        <div><div class="lbl">Expires</div><div class="val">09/29</div></div>
-        <div><div class="lbl">CVV</div><div class="val">•••</div></div>
+    <div style="background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:20px;padding:26px;margin-bottom:20px;color:#e2e8f0;position:relative;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:34px;">🏦 Kings<span style="color:#38bdf8;">gate</span></div>
+      <div style="font-size:20px;font-style:italic;font-weight:800;position:absolute;top:20px;right:24px;">VISA</div>
+      <div style="width:42px;height:32px;background:linear-gradient(135deg,#fbbf24,#d97706);border-radius:6px;margin-bottom:16px;"></div>
+      <div id="cardNumber" style="font-size:20px;letter-spacing:3px;margin-bottom:20px;font-family:'Courier New',monospace;">4821 •••• •••• 7391</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;">
+        <div><div style="opacity:.6;margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;">Card Holder</div><div style="font-size:13px;font-weight:600;">MARY FERRO</div></div>
+        <div><div style="opacity:.6;margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;">Expires</div><div style="font-size:13px;font-weight:600;">09/29</div></div>
+        <div><div style="opacity:.6;margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;">CVV</div><div style="font-size:13px;font-weight:600;">•••</div></div>
       </div>
     </div>
-    <div class="card-info">
-      <button onclick="alert('Card frozen ❄️ (visual only)')">❄️ Freeze</button>
-      <button onclick="alert('Just a joke — nothing happened 😄')">👁️ Show details</button>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-deposit" style="flex:1;padding:14px;border:none;border-radius:12px;font-weight:700;cursor:pointer;" onclick="toast('Card frozen ❄️ (visual only)','success')">❄️ Freeze</button>
+      <button class="btn-withdraw" style="flex:1;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;" onclick="toast('Just a demo 😄','success')">👁️ Show</button>
     </div>
   </div>
 
+  <!-- STATEMENT -->
   <div class="page" id="page-statement">
-    <div class="topbar">
-      <div class="greeting">Statement<b>All transactions</b></div>
-      <div class="top-actions"><button class="icon-btn" onclick="logout()">⏻</button></div>
+    <div class="top">
+      <div class="user"><div class="avatar">📄</div><div><div class="hi">All</div><div class="nm">Statement</div></div></div>
+      <div class="bell" onclick="logout()" style="font-size:16px;">⏻</div>
     </div>
     <input class="search-box" id="txSearch" placeholder="🔍 Search transactions..." oninput="filterTx()">
     <div id="statementList"></div>
   </div>
 
-  <div class="nav">
-    <button class="active" id="navHome" onclick="showPage('home')"><span class="icon">🏠</span>Home</button>
-    <button id="navPots" onclick="showPage('pots')"><span class="icon">💰</span>Pots</button>
-    <button id="navChart" onclick="showPage('chart')"><span class="icon">📊</span>Chart</button>
-    <button id="navCard" onclick="showPage('card')"><span class="icon">💳</span>Card</button>
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="active" id="navHome" onclick="showPage('home')"><span class="ic">🏠</span>Home</button>
+    <button id="navPayments" onclick="openSend()"><span class="ic">💸</span>Payments</button>
+    <button id="navProfile" onclick="showPage('card')"><span class="ic">👤</span>Profile</button>
+    <button id="navMore" onclick="showPage('pots')"><span class="ic">⋯</span>More</button>
   </div>
 </div>
 
-<!-- SEND MONEY — UK TRANSFER FORM -->
+<!-- SEND -->
 <div class="modal" id="sendModal">
   <div class="modal-card">
     <h2>New transfer</h2>
+    <p class="msub">Send money to any UK account</p>
     <label>Recipient name</label>
     <input id="sendTo" type="text" placeholder="e.g. Alex Smith" autocomplete="off">
     <label>Sort code</label>
-    <input id="sendSort" type="text" placeholder="12-34-56" maxlength="8" inputmode="numeric">
+    <input id="sendSort" type="text" placeholder="12-34-56" maxlength="8">
     <label>Account number</label>
-    <input id="sendAcct" type="text" placeholder="12345678" maxlength="8" inputmode="numeric">
+    <input id="sendAcct" type="text" placeholder="12345678" maxlength="8">
     <label>Reference</label>
-    <input id="sendRef" type="text" placeholder="e.g. Rent" maxlength="18" autocomplete="off">
-    <label>Amount (€)</label>
-    <input id="sendAmount" type="number" placeholder="50.00" step="0.01" min="0">
+    <input id="sendRef" type="text" placeholder="e.g. Rent" maxlength="18">
+    <label>Amount (£)</label>
+    <input id="sendAmount" type="number" placeholder="50.00" step="0.01">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('sendModal')">Cancel</button>
-      <button onclick="confirmSend()">Send</button>
+      <button class="btn-primary" onclick="confirmSend()">Send</button>
     </div>
   </div>
 </div>
 
+<!-- DEPOSIT -->
+<div class="modal" id="depositModal">
+  <div class="modal-card">
+    <h2>Deposit</h2>
+    <p class="msub">Add money to your account</p>
+    <label>Amount (£)</label>
+    <input id="depositAmount" type="number" placeholder="100.00" step="0.01">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('depositModal')">Cancel</button>
+      <button class="btn-primary" onclick="confirmDeposit()">Deposit</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="modal" id="withdrawModal">
+  <div class="modal-card">
+    <h2>Withdraw</h2>
+    <p class="msub">Take money out of your account</p>
+    <label>Amount (£)</label>
+    <input id="withdrawAmount" type="number" placeholder="50.00" step="0.01">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('withdrawModal')">Cancel</button>
+      <button class="btn-primary" onclick="confirmWithdraw()">Withdraw</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOVE -->
 <div class="modal" id="moveModal">
   <div class="modal-card">
     <h2 id="moveTitle">Move money</h2>
-    <label>Amount (€)</label>
-    <input id="moveAmount" type="number" placeholder="50.00" step="0.01" min="0">
+    <p class="msub">Between Current and Savings</p>
+    <label>Amount (£)</label>
+    <input id="moveAmount" type="number" placeholder="50.00" step="0.01">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('moveModal')">Cancel</button>
-      <button onclick="confirmMove()">Move</button>
+      <button class="btn-primary" onclick="confirmMove()">Move</button>
     </div>
   </div>
 </div>
 
+<!-- SET BALANCE (hidden — tap balance 3x) -->
+<div class="modal" id="setBalModal">
+  <div class="modal-card">
+    <h2>⚙️ Set Balance</h2>
+    <p class="msub">Admin — hidden control (demo only)</p>
+    <label>New balance (£)</label>
+    <input id="setBalAmount" type="number" placeholder="e.g. 50000" step="0.01">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('setBalModal')">Cancel</button>
+      <button class="btn-primary" onclick="confirmSetBal()">Set</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF -->
 <div class="modal" id="notifModal">
   <div class="modal-card">
     <h2>🔔 Notifications</h2>
-    <div class="notif"><div class="emoji">💸</div><div><div class="text"><b>€6.45</b> spent at Pret A Manger</div><div class="time">2 minutes ago</div></div></div>
-    <div class="notif"><div class="emoji">💰</div><div><div class="text">Salary of <b>€4,200</b> received</div><div class="time">Yesterday</div></div></div>
-    <div class="notif"><div class="emoji">🔒</div><div><div class="text">New login from Chrome on Windows</div><div class="time">2 days ago</div></div></div>
-    <div class="notif"><div class="emoji">🎉</div><div><div class="text">You set up a Savings pot!</div><div class="time">3 days ago</div></div></div>
-    <div class="modal-actions"><button onclick="closeModal('notifModal')">Close</button></div>
+    <div class="notif"><div class="em">💸</div><div><div class="tx-t"><b>£6.45</b> spent at Pret A Manger</div><div class="tm">2 minutes ago</div></div></div>
+    <div class="notif"><div class="em">💰</div><div><div class="tx-t">Salary of <b>£4,200</b> received</div><div class="tm">Yesterday</div></div></div>
+    <div class="notif"><div class="em">🔒</div><div><div class="tx-t">New login from Chrome on Windows</div><div class="tm">2 days ago</div></div></div>
+    <div class="notif"><div class="em">🎉</div><div><div class="tx-t">You set up a Savings pot!</div><div class="tm">3 days ago</div></div></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal('notifModal')">Close</button></div>
   </div>
 </div>
 
@@ -295,6 +398,7 @@
   let savings = START_SAVINGS;
   let enteredPin = '';
   let moveDirection = 'toSavings';
+  let tapCount = 0, tapTimer = null;
 
   const allTx = [
     { name:'Salary — Acme Ltd', date:'Oct 12, 2026', amt:4200.00 },
@@ -308,28 +412,11 @@
     { name:'British Gas', date:'Oct 4, 2026', amt:-120.00 },
     { name:'Amazon', date:'Oct 3, 2026', amt:-34.50 },
     { name:'Costa Coffee', date:'Oct 2, 2026', amt:-4.75 },
-    { name:'Boots', date:'Oct 1, 2026', amt:-18.30 },
-    { name:'Netflix', date:'Sep 30, 2026', amt:-15.99 },
-    { name:'Uber', date:'Sep 29, 2026', amt:-22.40 },
-    { name:'Vodafone', date:'Sep 28, 2026', amt:-25.00 },
-    { name:'John Lewis', date:'Sep 27, 2026', amt:-89.99 },
-    { name:'Greggs', date:'Sep 26, 2026', amt:-3.60 },
-    { name:'IKEA', date:'Sep 25, 2026', amt:-145.00 },
-    { name:'Deliveroo', date:'Sep 24, 2026', amt:-28.75 },
-    { name:'Water Bill', date:'Sep 23, 2026', amt:-45.00 },
-    { name:'H&M', date:'Sep 22, 2026', amt:-56.99 },
-    { name:'Shell Petrol', date:'Sep 21, 2026', amt:-68.40 },
-    { name:'Argos', date:'Sep 20, 2026', amt:-42.99 },
-    { name:'Wetherspoon', date:'Sep 19, 2026', amt:-31.20 },
-    { name:'Gym Membership', date:'Sep 18, 2026', amt:-45.00 },
-    { name:'Cinema', date:'Sep 17, 2026', amt:-14.50 },
-    { name:"Nando's", date:'Sep 16, 2026', amt:-22.80 },
-    { name:'Post Office', date:'Sep 15, 2026', amt:-8.75 },
-    { name:'TK Maxx', date:'Sep 14, 2026', amt:-39.99 },
-    { name:'Bakery', date:'Sep 13, 2026', amt:-5.20 }
+    { name:'Boots', date:'Oct 1, 2026', amt:-18.30 }
   ];
 
-  const fmt = n => '€' + n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtG = n => '£' + n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtE = n => '€' + n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 
   function animateTo(el, to, from) {
     from = from || 0;
@@ -337,213 +424,7 @@
     function step(ts) {
       if (!t0) t0 = ts;
       const p = Math.min((ts - t0) / dur, 1);
-      el.textContent = fmt(from + (to - from) * p);
-      if (p < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  function toast(msg, type) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast show ' + (type || '');
-    clearTimeout(window._toastT);
-    window._toastT = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2600);
-  }
-
-  function toggleTheme() {
-    document.body.classList.toggle('light');
-    const light = document.body.classList.contains('light');
-    document.getElementById('themeBtn').textContent = light ? '☀️' : '🌙';
-    localStorage.setItem('fb_theme', light ? 'light' : 'dark');
-  }
-
-  function login() {
-    const pass = document.getElementById('passInput').value;
-    if (pass !== PASSWORD) { toast('Incorrect password.', 'error'); return; }
-    enteredPin = '';
-    updatePinDots();
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('pinScreen').style.display = 'block';
-  }
-
-  function pinPress(d) {
-    if (enteredPin.length >= 4) return;
-    enteredPin += d;
-    updatePinDots();
-    if (enteredPin.length === 4) setTimeout(checkPin, 200);
-  }
-  function pinBack() { enteredPin = enteredPin.slice(0, -1); updatePinDots(); }
-  function updatePinDots() {
-    for (let i = 0; i < 4; i++) document.getElementById('d' + i).classList.toggle('filled', i < enteredPin.length);
-  }
-  function checkPin() {
-    if (enteredPin !== PIN) { toast('Wrong PIN.', 'error'); enteredPin = ''; updatePinDots(); return; }
-    document.getElementById('pinScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    sessionStorage.setItem('fb_loggedin', '1');
-
-    let acct = localStorage.getItem('fb_acct');
-    if (!acct) { acct = Math.floor(1000 + Math.random()*9000) + ''; localStorage.setItem('fb_acct', acct); }
-    let card4 = localStorage.getItem('fb_card4');
-    if (!card4) { card4 = Math.floor(1000 + Math.random()*9000) + ''; localStorage.setItem('fb_card4', card4); }
-    document.getElementById('acctNum').textContent = '•••• •••• •••• ' + acct;
-    document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
-
-    const sb = localStorage.getItem('fb_balance_v3');
-    const ss = localStorage.getItem('fb_savings_v3');
-    balance = sb === null ? START_BALANCE : parseFloat(sb);
-    savings = ss === null ? START_SAVINGS : parseFloat(ss);
-
-    animateTo(document.getElementById('balanceAmt'), balance);
-    document.getElementById('potCurrent').textContent = fmt(balance);
-    document.getElementById('potSavings').textContent = fmt(savings);
-    buildStatement();
-    toast('Welcome back, Mary 👋', 'success');
-  }
-
-  function logout() {
-    sessionStorage.removeItem('fb_loggedin');
-    document.getElementById('passInput').value = '';
-    enteredPin = '';
-    updatePinDots();
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('pinScreen').style.display = 'none';
-    document.getElementById('loginCard').style.display = 'block';
-    showPage('home');
-  }
-
-  function showPage(p) {
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    const el = document.getElementById('page-' + p);
-    if (el) el.classList.add('active');
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    const nb = document.getElementById('nav' + p.charAt(0).toUpperCase() + p.slice(1));
-    if (nb) nb.classList.add('active');
-  }
-
-  function openSend() { document.getElementById('sendModal').classList.add('open'); }
-  function openMove(dir) {
-    moveDirection = dir;
-    document.getElementById('moveTitle').textContent = dir === 'toSavings' ? 'Move to Savings' : 'Move to Current';
-    document.getElementById('moveModal').classList.add('open');
-  }
-  function openNotif() { document.getElementById('notifModal').classList.add('open'); }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-    ['sendTo','sendSort','sendAcct','sendRef','sendAmount','moveAmount'].forEach(f => {
-      const el = document.getElementById(f);
-      if (el) el.value = '';
-    });
-  }
-
-  function confirmSend() {
-    const to = document.getElementById('sendTo').value.trim();
-    const sort = document.getElementById('sendSort').value.trim();
-    const acct = document.getElementById('sendAcct').value.trim();
-    const ref = document.getElementById('sendRef').value.trim();
-    const amt = parseFloat(document.getElementById('sendAmount').value);
-
-    if (!to) { toast('Enter recipient name.', 'error'); return; }
-    if (!/^\d{2}-\d{2}-\d{2}$/.test(sort)) { toast('Sort code must be 12-34-56.', 'error'); return; }
-    if (!/^\d{8}$/.test(acct)) { toast('Account number must be 8 digits.', 'error'); return; }
-    if (!amt || amt <= 0) { toast('Enter a valid amount.', 'error'); return; }
-    if (amt > balance) { toast('Not enough funds.', 'error'); return; }
-
-    balance -= amt;
-    animateTo(document.getElementById('balanceAmt'), balance, balance + amt);
-    document.getElementById('potCurrent').textContent = fmt(balance);
-    saveState();
-
-    const dateStr = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-    const label = ref ? ('Sent to ' + to + ' — ' + ref) : ('Sent to ' + to);
-    const newTx = document.createElement('div');
-    newTx.className = 'tx';
-    newTx.innerHTML = '<div><div class="name">' + label + '</div><div class="date">' + dateStr + '</div></div><div class="amount neg">−' + fmt(amt) + '</div>';
-    document.getElementById('txList').insertBefore(newTx, document.getElementById('txList').firstChild);
-
-    // add to statement too
-    allTx.unshift({ name: label, date: dateStr, amt: -amt });
-    buildStatement();
-
-    closeModal('sendModal');
-    toast(fmt(amt) + ' sent to ' + to, 'success');
-  }
-
-  function confirmMove() {
-    const amt = parseFloat(document.getElementById('moveAmount').value);
-    if (!amt || amt <= 0) { toast('Enter an amount.', 'error'); return; }
-    if (moveDirection === 'toSavings') {
-      if (amt > balance) { toast('Not enough in Current.', 'error'); return; }
-      balance -= amt; savings += amt;
-      toast(fmt(amt) + ' moved to Savings', 'success');
-    } else {
-      if (amt > savings) { toast('Not enough in Savings.', 'error'); return; }
-      savings -= amt; balance += amt;
-      toast(fmt(amt) + ' moved to Current', 'success');
-    }
-    document.getElementById('balanceAmt').textContent = fmt(balance);
-    document.getElementById('potCurrent').textContent = fmt(balance);
-    document.getElementById('potSavings').textContent = fmt(savings);
-    saveState();
-    closeModal('moveModal');
-  }
-
-  function saveState() {
-    localStorage.setItem('fb_balance_v3', balance);
-    localStorage.setItem('fb_savings_v3', savings);
-  }
-
-  function buildStatement() {
-    const list = document.getElementById('statementList');
-    list.innerHTML = '';
-    allTx.forEach(t => {
-      const row = document.createElement('div');
-      row.className = 'tx';
-      row.innerHTML = '<div><div class="name">' + t.name + '</div><div class="date">' + t.date + '</div></div><div class="amount ' + (t.amt > 0 ? 'pos' : 'neg') + '">' + (t.amt > 0 ? '+' : '−') + fmt(Math.abs(t.amt)) + '</div>';
-      list.appendChild(row);
-    });
-  }
-
-  function filterTx() {
-    const q = document.getElementById('txSearch').value.toLowerCase();
-    const list = document.getElementById('statementList');
-    list.innerHTML = '';
-    const filtered = allTx.filter(t => t.name.toLowerCase().includes(q));
-    if (filtered.length === 0) {
-      list.innerHTML = '<p style="text-align:center;color:var(--muted);padding:30px 0;">No transactions found</p>';
-      return;
-    }
-    filtered.forEach(t => {
-      const row = document.createElement('div');
-      row.className = 'tx';
-      row.innerHTML = '<div><div class="name">' + t.name + '</div><div class="date">' + t.date + '</div></div><div class="amount ' + (t.amt > 0 ? 'pos' : 'neg') + '">' + (t.amt > 0 ? '+' : '−') + fmt(Math.abs(t.amt)) + '</div>';
-      list.appendChild(row);
-    });
-  }
-
-  window.onload = () => {
-    const theme = localStorage.getItem('fb_theme');
-    if (theme === 'light') { document.body.classList.add('light'); document.getElementById('themeBtn').textContent = '☀️'; }
-
-    if (sessionStorage.getItem('fb_loggedin') === '1') {
-      document.getElementById('loginCard').style.display = 'none';
-      document.getElementById('pinScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      let acct = localStorage.getItem('fb_acct');
-      let card4 = localStorage.getItem('fb_card4');
-      if (acct) document.getElementById('acctNum').textContent = '•••• •••• •••• ' + acct;
-      if (acct && card4) document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
-      const sb = localStorage.getItem('fb_balance_v3');
-      const ss = localStorage.getItem('fb_savings_v3');
-      balance = sb === null ? START_BALANCE : parseFloat(sb);
-      savings = ss === null ? START_SAVINGS : parseFloat(ss);
-      animateTo(document.getElementById('balanceAmt'), balance);
-      document.getElementById('potCurrent').textContent = fmt(balance);
-      document.getElementById('potSavings').textContent = fmt(savings);
-      buildStatement();
-    }
-  };
-</script>
-</body>
-</html>
+      const v = from + (to - from) * p;
+      el.textContent = fmtG(v);
+      document.getElementById('gbpAmt').textContent = fmtG(v);
+      document.getElementById('eurAmt').textContent = fmtE(v

@@ -11,13 +11,14 @@
     --accent: #10b981; --accent-2: #34d399; --danger: #ef4444; --navy: #0f172a;
   }
   * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,'Segoe UI',Roboto,sans-serif; -webkit-tap-highlight-color:transparent; }
+  
   body { min-height:100vh; background:var(--bg); display:flex; flex-direction:column; align-items:center; color:var(--text); padding:20px; }
 
-  /* AUTH SCREENS - Fixed to the center, hidden by default */
-  .auth-screen { width:100%; max-width:420px; display:none; margin-top:40px; }
-  .auth-screen.active { display:block !important; }
-  
-  .auth-card { background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; }
+  /* HIDE EVERYTHING BY DEFAULT SO NOTHING FLASHES OR STACKS */
+  #loginCard, #signupCard, #pinScreen, #app { display: none; }
+
+  /* AUTH SCREENS */
+  .auth-card { width:100%; max-width:420px; background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; margin-top:40px; }
   .login-logo { font-size:22px; font-weight:700; margin-bottom:30px; display:flex; align-items:center; gap:10px; }
   .login-logo .mark { width:36px; height:36px; border-radius:10px; background:var(--accent); display:flex; align-items:center; justify-content:center; color:var(--navy); font-weight:800; font-size:16px; }
   .login-logo span { color:var(--accent); }
@@ -46,9 +47,8 @@
   .profile-upload .upload-btn { background:var(--card); border:1px solid var(--border); padding:8px 12px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; }
   .profile-upload input[type="file"] { display:none; }
 
-  /* PIN SCREEN */
-  #pinScreen { display:none; width:100%; max-width:380px; margin-top:40px; }
-  .pin-card { background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; text-align:center; }
+  /* PIN */
+  #pinScreen { width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:40px; text-align:center; margin-top:40px; }
   #pinScreen h2 { font-size:18px; margin-bottom:8px; }
   #pinScreen p { color:var(--muted); font-size:13px; margin-bottom:26px; }
   .pin-dots { display:flex; justify-content:center; gap:14px; margin-bottom:30px; }
@@ -59,8 +59,8 @@
   .keypad button:hover { background:var(--border); }
   .keypad .empty { visibility:hidden; }
 
-  /* APP SCREEN - Hidden by default */
-  .app { display:none; width:100%; max-width:440px; margin:0 auto; }
+  /* APP */
+  #app { width:100%; max-width:440px; margin:0 auto; }
   .page { display:none; }
   .page.active { display:block; }
 
@@ -162,7 +162,7 @@
 <body>
 
 <!-- LOGIN -->
-<div class="auth-screen" id="loginCard">
+<div id="loginCard">
   <div class="auth-card">
     <div class="login-logo"><div class="mark">K</div>Kings<span>gate</span></div>
     <h1>Welcome back</h1>
@@ -178,7 +178,7 @@
 </div>
 
 <!-- SIGN UP -->
-<div class="auth-screen" id="signupCard">
+<div id="signupCard">
   <div class="auth-card">
     <div class="login-logo"><div class="mark">K</div>Kings<span>gate</span></div>
     <h1>Create account</h1>
@@ -204,23 +204,21 @@
 
 <!-- PIN -->
 <div id="pinScreen">
-  <div class="pin-card">
-    <h2>Enter your PIN</h2>
-    <p>Enter your 4-digit PIN</p>
-    <div class="pin-dots">
-      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
-    </div>
-    <div class="keypad">
-      <button onclick="pinPress('1')">1</button><button onclick="pinPress('2')">2</button><button onclick="pinPress('3')">3</button>
-      <button onclick="pinPress('4')">4</button><button onclick="pinPress('5')">5</button><button onclick="pinPress('6')">6</button>
-      <button onclick="pinPress('7')">7</button><button onclick="pinPress('8')">8</button><button onclick="pinPress('9')">9</button>
-      <button class="empty"></button><button onclick="pinPress('0')">0</button><button onclick="pinBack()">⌫</button>
-    </div>
+  <h2>Enter your PIN</h2>
+  <p>Enter your 4-digit PIN</p>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="keypad">
+    <button onclick="pinPress('1')">1</button><button onclick="pinPress('2')">2</button><button onclick="pinPress('3')">3</button>
+    <button onclick="pinPress('4')">4</button><button onclick="pinPress('5')">5</button><button onclick="pinPress('6')">6</button>
+    <button onclick="pinPress('7')">7</button><button onclick="pinPress('8')">8</button><button onclick="pinPress('9')">9</button>
+    <button class="empty"></button><button onclick="pinPress('0')">0</button><button onclick="pinBack()">⌫</button>
   </div>
 </div>
 
 <!-- APP -->
-<div class="app" id="app">
+<div id="app">
 
   <!-- HOME -->
   <div class="page active" id="page-home">
@@ -550,13 +548,14 @@
 
   // AUTH SWITCHING
   function switchAuth(type) {
-    document.querySelectorAll('.auth-screen').forEach(c => {
-      c.classList.remove('active');
-      c.style.display = 'none'; 
-    });
-    const target = document.getElementById(type === 'signup' ? 'signupCard' : 'loginCard');
-    target.style.display = 'block';
-    target.classList.add('active');
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('signupCard').style.display = 'none';
+    
+    if (type === 'signup') {
+      document.getElementById('signupCard').style.display = 'block';
+    } else {
+      document.getElementById('loginCard').style.display = 'block';
+    }
   }
 
   // SIGN UP LOGIC
@@ -599,6 +598,7 @@
     
     enteredPin = '';
     updatePinDots();
+    // HIDE LOGIN AND SHOW PIN
     document.getElementById('loginCard').style.display = 'none';
     document.getElementById('signupCard').style.display = 'none';
     document.getElementById('pinScreen').style.display = 'block';
@@ -610,7 +610,6 @@
     
     document.getElementById('userNameDisplay').textContent = name;
     
-    // Make initials
     const parts = name.split(' ');
     const initials = parts.map(p => p[0]).join('').substring(0,2).toUpperCase();
     const avatarEl = document.getElementById('userAvatar');
@@ -621,11 +620,9 @@
       avatarEl.textContent = initials;
     }
     
-    // Card Name
     document.getElementById('cardName').textContent = name.toUpperCase();
   }
 
-  // AVATAR CHANGING WHILE LOGGED IN
   function triggerAvatarUpload() {
     document.getElementById('avatarInputLoggedIn').click();
   }
@@ -654,6 +651,7 @@
   }
   function checkPin() {
     if (enteredPin !== PIN) { toast('Wrong PIN.', 'error'); enteredPin = ''; updatePinDots(); return; }
+    // HIDE PIN AND SHOW APP
     document.getElementById('pinScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     sessionStorage.setItem('fb_loggedin', '1');
@@ -685,13 +683,13 @@
     document.getElementById('passInput').value = '';
     enteredPin = '';
     updatePinDots();
+    // HIDE APP AND SHOW LOGIN
     document.getElementById('app').style.display = 'none';
     document.getElementById('pinScreen').style.display = 'none';
     switchAuth('login');
     showPage('home');
   }
 
-  // SETTINGS (Change Name/Pass)
   function openSettings() {
     document.getElementById('settingsModal').classList.add('open');
     const currentName = localStorage.getItem('fb_name') || 'Mary Ferro';
@@ -702,14 +700,9 @@
   function saveSettings() {
     const newName = document.getElementById('setName').value.trim();
     const newPass = document.getElementById('setPass').value;
-    
     if (!newName) { toast('Name cannot be empty', 'error'); return; }
-    
     localStorage.setItem('fb_name', newName);
-    if (newPass) {
-      localStorage.setItem('fb_pass', newPass);
-    }
-    
+    if (newPass) { localStorage.setItem('fb_pass', newPass); }
     updateUserUI();
     closeModal('settingsModal');
     toast('Profile updated successfully!', 'success');
@@ -885,12 +878,7 @@
   }
 
   window.onload = () => {
-    // Force hide login and signup screens immediately on load
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('signupCard').style.display = 'none';
-    
     if (sessionStorage.getItem('fb_loggedin') === '1') {
-      document.getElementById('pinScreen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       
       updateUserUI();
@@ -907,7 +895,6 @@
       document.getElementById('potSavings').textContent = fmtG(savings);
       buildStatement();
     } else {
-      // If not logged in, show the login screen
       switchAuth('login');
     }
   };

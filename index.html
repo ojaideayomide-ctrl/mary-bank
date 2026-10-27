@@ -57,6 +57,10 @@
   .user .hi { font-size:13px; color:var(--muted); }
   .user .nm { font-size:16px; font-weight:700; display:flex; align-items:center; gap:6px; }
   .user .nm .check { color:var(--accent); font-size:13px; }
+  
+  .top-right { display:flex; gap:8px; align-items:center; }
+  .install-btn { background:var(--accent); color:var(--navy); border:none; padding:9px 12px; border-radius:12px; font-weight:700; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; }
+  .install-btn:hover { background:var(--accent-2); }
   .bell { position:relative; width:42px; height:42px; border-radius:12px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; }
   .bell .dot { position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:10px; font-weight:700; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
 
@@ -177,7 +181,11 @@
           <div class="nm">Mary Ferro <span class="check">✔</span></div>
         </div>
       </div>
-      <div class="bell" onclick="openNotif()">🔔<span class="dot">2</span></div>
+      
+      <div class="top-right">
+        <button class="install-btn" onclick="installApp()">⬇️ Install App</button>
+        <div class="bell" onclick="openNotif()">🔔<span class="dot">2</span></div>
+      </div>
     </div>
 
     <div class="bal-label">Total balance</div>
@@ -440,6 +448,28 @@
     clearTimeout(window._toastT);
     window._toastT = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2500);
   }
+
+  // --- PWA INSTALL LOGIC ---
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          toast('App installed successfully! 🎉', 'success');
+        }
+        deferredPrompt = null;
+      });
+    } else {
+      toast('To install: tap your browser menu (⋮) and select "Add to Home Screen"', 'success');
+    }
+  }
+  // --------------------------
 
   function tapBalance() {
     tapCount++;

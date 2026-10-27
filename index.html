@@ -159,7 +159,7 @@
 <body>
 
 <!-- LOGIN -->
-<div class="auth-card active" id="loginCard">
+<div class="auth-card" id="loginCard">
   <div class="login-logo"><div class="mark">K</div>Kings<span>gate</span></div>
   <h1>Welcome back</h1>
   <p class="sub">Enter your password to continue</p>
@@ -876,9 +876,11 @@
   }
 
   window.onload = () => {
+    // ALWAYS hide the login and signup screens first to prevent flashing
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('signupCard').style.display = 'none';
+    
     if (sessionStorage.getItem('fb_loggedin') === '1') {
-      document.getElementById('loginCard').style.display = 'none';
-      document.getElementById('signupCard').style.display = 'none';
       document.getElementById('pinScreen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       
@@ -895,6 +897,9 @@
       document.getElementById('potCurrent').textContent = fmtG(balance);
       document.getElementById('potSavings').textContent = fmtG(savings);
       buildStatement();
+    } else {
+      // If not logged in, show the login screen
+      switchAuth('login');
     }
   };
 </script>

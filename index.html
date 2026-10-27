@@ -207,7 +207,7 @@
         <div class="avatar" id="userAvatar">MF</div>
         <div>
           <div class="hi">Welcome,</div>
-          <div class="nm"><span id="userName">Mary Ferro</span> <span class="check">✔</span></div>
+          <div class="nm"><span id="userNameDisplay">Mary Ferro</span> <span class="check">✔</span></div>
         </div>
       </div>
       
@@ -418,4 +418,415 @@
 <div class="modal" id="notifModal">
   <div class="modal-card">
     <h2>🔔 Notifications</h2>
-    <div class="notif"><div class="em">
+    <div class="notif"><div class="em">💸</div><div><div class="tx-t"><b>£6.45</b> spent at Pret A Manger</div><div class="tm">2 minutes ago</div></div></div>
+    <div class="notif"><div class="em">💰</div><div><div class="tx-t">Salary of <b>£4,200</b> received</div><div class="tm">Yesterday</div></div></div>
+    <div class="notif"><div class="em">🔒</div><div><div class="tx-t">New login from Chrome on Windows</div><div class="tm">2 days ago</div></div></div>
+    <div class="notif"><div class="em">🎉</div><div><div class="tx-t">You set up a Savings pot!</div><div class="tm">3 days ago</div></div></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal('notifModal')">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // DEFAULT SETTINGS (Mary's default account)
+  const DEFAULT_PASSWORD = ['R','o','d','d','y','l','i','z','z','y','2','0','2','1'].join('');
+  const PIN = '5050';
+  const START_BALANCE = 12450.00;
+  const START_SAVINGS = 1200.00;
+
+  let balance = START_BALANCE;
+  let savings = START_SAVINGS;
+  let enteredPin = '';
+  let moveDirection = 'toSavings';
+  let tapCount = 0, tapTimer = null;
+  let currentUser = { name: 'Mary Ferro', avatar: null, pass: DEFAULT_PASSWORD };
+
+  const allTx = [
+    { name:'Salary — Acme Ltd', date:'Oct 12, 2026', amt:4200.00 },
+    { name:'Tesco', date:'Oct 11, 2026', amt:-89.99 },
+    { name:'Pret A Manger', date:'Oct 10, 2026', amt:-6.45 },
+    { name:'Transfer from Alex', date:'Oct 9, 2026', amt:250.00 },
+    { name:'TfL Travel', date:'Oct 8, 2026', amt:-15.99 },
+    { name:'Apple Store', date:'Oct 7, 2026', amt:-1299.00 },
+    { name:"Sainsbury's", date:'Oct 6, 2026', amt:-54.20 },
+    { name:'Spotify', date:'Oct 5, 2026', amt:-9.99 },
+    { name:'British Gas', date:'Oct 4, 2026', amt:-120.00 },
+    { name:'Amazon', date:'Oct 3, 2026', amt:-34.50 },
+    { name:'Costa Coffee', date:'Oct 2, 2026', amt:-4.75 },
+    { name:'Boots', date:'Oct 1, 2026', amt:-18.30 }
+  ];
+
+  const fmtG = n => '£' + n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtE = n => '€' + n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  function animateTo(el, to, from) {
+    from = from || 0;
+    let dur = 600, t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      const v = from + (to - from) * p;
+      el.textContent = fmtG(v);
+      document.getElementById('gbpAmt').textContent = fmtG(v);
+      document.getElementById('eurAmt').textContent = fmtE(v * 1.17);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + (type || '');
+    clearTimeout(window._toastT);
+    window._toastT = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2500);
+  }
+
+  // PWA INSTALL
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => { deferredPrompt = null; });
+    } else {
+      toast('To install: tap your browser menu (⋮) and select "Add to Home Screen"', 'success');
+    }
+  }
+
+  // AUTH SWITCHING
+  function switchAuth(type) {
+    document.querySelectorAll('.auth-card').forEach(c => c.classList.remove('active'));
+    document.getElementById(type === 'signup' ? 'signupCard' : 'loginCard').classList.add('active');
+  }
+
+  // SIGN UP LOGIC
+  let tempAvatarData = null;
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        tempAvatarData = e.target.result;
+        document.getElementById('avatarPreview').innerHTML = '<img src="' + tempAvatarData + '">';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function signup() {
+    const name = document.getElementById('signupName').value.trim();
+    const pass = document.getElementById('signupPass').value;
+    if (!name || !pass) { toast('Please fill all fields.', 'error'); return; }
+    
+    localStorage.setItem('fb_name', name);
+    localStorage.setItem('fb_pass', pass);
+    if (tempAvatarData) localStorage.setItem('fb_avatar', tempAvatarData);
+    localStorage.setItem('fb_balance_v4', START_BALANCE);
+    localStorage.setItem('fb_savings_v4', START_SAVINGS);
+    
+    toast('Account created! Please sign in.', 'success');
+    document.getElementById('signupName').value = '';
+    document.getElementById('signupPass').value = '';
+    document.getElementById('avatarPreview').innerHTML = '👤';
+    tempAvatarData = null;
+    switchAuth('login');
+  }
+
+  function login() {
+    const inputPass = document.getElementById('passInput').value;
+    const savedPass = localStorage.getItem('fb_pass') || DEFAULT_PASSWORD;
+    if (inputPass !== savedPass) { toast('Incorrect password.', 'error'); return; }
+    
+    enteredPin = '';
+    updatePinDots();
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('signupCard').style.display = 'none';
+    document.getElementById('pinScreen').style.display = 'block';
+  }
+
+  function updateUserUI() {
+    const name = localStorage.getItem('fb_name') || 'Mary Ferro';
+    const avatar = localStorage.getItem('fb_avatar');
+    
+    document.getElementById('userNameDisplay').textContent = name;
+    
+    // Make initials
+    const parts = name.split(' ');
+    const initials = parts.map(p => p[0]).join('').substring(0,2).toUpperCase();
+    const avatarEl = document.getElementById('userAvatar');
+    
+    if (avatar) {
+      avatarEl.innerHTML = '<img src="' + avatar + '">';
+    } else {
+      avatarEl.textContent = initials;
+    }
+    
+    // Card Name
+    document.getElementById('cardName').textContent = name.toUpperCase();
+  }
+
+  // AVATAR CHANGING WHILE LOGGED IN
+  function triggerAvatarUpload() {
+    document.getElementById('avatarInputLoggedIn').click();
+  }
+  function changeAvatarLoggedIn(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        localStorage.setItem('fb_avatar', e.target.result);
+        updateUserUI();
+        toast('Profile picture updated!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function pinPress(d) {
+    if (enteredPin.length >= 4) return;
+    enteredPin += d;
+    updatePinDots();
+    if (enteredPin.length === 4) setTimeout(checkPin, 200);
+  }
+  function pinBack() { enteredPin = enteredPin.slice(0, -1); updatePinDots(); }
+  function updatePinDots() {
+    for (let i = 0; i < 4; i++) document.getElementById('d' + i).classList.toggle('filled', i < enteredPin.length);
+  }
+  function checkPin() {
+    if (enteredPin !== PIN) { toast('Wrong PIN.', 'error'); enteredPin = ''; updatePinDots(); return; }
+    document.getElementById('pinScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('fb_loggedin', '1');
+
+    updateUserUI();
+
+    let acct = localStorage.getItem('fb_acct');
+    if (!acct) { acct = Math.floor(1000 + Math.random()*9000) + ''; localStorage.setItem('fb_acct', acct); }
+    let card4 = localStorage.getItem('fb_card4');
+    if (!card4) { card4 = Math.floor(1000 + Math.random()*9000) + ''; localStorage.setItem('fb_card4', card4); }
+    document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
+
+    const sb = localStorage.getItem('fb_balance_v4');
+    const ss = localStorage.getItem('fb_savings_v4');
+    balance = sb === null ? START_BALANCE : parseFloat(sb);
+    savings = ss === null ? START_SAVINGS : parseFloat(ss);
+
+    animateTo(document.getElementById('balanceAmt'), balance);
+    document.getElementById('potCurrent').textContent = fmtG(balance);
+    document.getElementById('potSavings').textContent = fmtG(savings);
+    buildStatement();
+    
+    const fn = localStorage.getItem('fb_name') || 'Mary';
+    toast('Welcome back, ' + fn.split(' ')[0] + ' 👋', 'success');
+  }
+
+  function logout() {
+    sessionStorage.removeItem('fb_loggedin');
+    document.getElementById('passInput').value = '';
+    enteredPin = '';
+    updatePinDots();
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('pinScreen').style.display = 'none';
+    switchAuth('login');
+    showPage('home');
+  }
+
+  function showPage(p) {
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    const el = document.getElementById('page-' + p);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+    const map = { home:'navHome', pots:'navMore', card:'navProfile', statement:'navHome' };
+    const nb = document.getElementById(map[p]);
+    if (nb) nb.classList.add('active');
+  }
+
+  function tapBalance() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+    if (tapCount >= 3) {
+      tapCount = 0;
+      document.getElementById('setBalModal').classList.add('open');
+      document.getElementById('setBalAmount').value = '';
+    }
+  }
+
+  function openSend() { document.getElementById('sendModal').classList.add('open'); }
+  function openDeposit() { document.getElementById('depositModal').classList.add('open'); }
+  function openWithdraw() { document.getElementById('withdrawModal').classList.add('open'); }
+  function openMove(dir) {
+    moveDirection = dir;
+    document.getElementById('moveTitle').textContent = dir === 'toSavings' ? 'Move to Savings' : 'Move to Current';
+    document.getElementById('moveModal').classList.add('open');
+  }
+  function openNotif() { document.getElementById('notifModal').classList.add('open'); }
+  
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    ['sendTo','sendSort','sendAcct','sendRef','sendAmount','depositAmount','withdrawAmount','moveAmount','setBalAmount'].forEach(f => {
+      const el = document.getElementById(f);
+      if (el) el.value = '';
+    });
+  }
+
+  function refreshBalances() {
+    document.getElementById('balanceAmt').textContent = fmtG(balance);
+    document.getElementById('gbpAmt').textContent = fmtG(balance);
+    document.getElementById('eurAmt').textContent = fmtE(balance * 1.17);
+    document.getElementById('potCurrent').textContent = fmtG(balance);
+    document.getElementById('potSavings').textContent = fmtG(savings);
+  }
+
+  function confirmSend() {
+    const to = document.getElementById('sendTo').value.trim();
+    const sort = document.getElementById('sendSort').value.trim();
+    const acct = document.getElementById('sendAcct').value.trim();
+    const ref = document.getElementById('sendRef').value.trim();
+    const amt = parseFloat(document.getElementById('sendAmount').value);
+    if (!to) { toast('Enter recipient name.', 'error'); return; }
+    if (!/^\d{2}-\d{2}-\d{2}$/.test(sort)) { toast('Sort code must be 12-34-56.', 'error'); return; }
+    if (!/^\d{8}$/.test(acct)) { toast('Account number must be 8 digits.', 'error'); return; }
+    if (!amt || amt <= 0) { toast('Enter a valid amount.', 'error'); return; }
+    if (amt > balance) { toast('Not enough funds.', 'error'); return; }
+    balance -= amt;
+    refreshBalances();
+    saveState();
+    const ds = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const label = ref ? ('Sent to ' + to + ' — ' + ref) : ('Sent to ' + to);
+    const row = document.createElement('div');
+    row.className = 'tx';
+    row.innerHTML = '<div><div class="name">' + label + '</div><div class="date">' + ds + '</div></div><div class="amount neg">−' + fmtG(amt) + '</div>';
+    document.getElementById('txList').insertBefore(row, document.getElementById('txList').firstChild);
+    allTx.unshift({ name: label, date: ds, amt: -amt });
+    buildStatement();
+    closeModal('sendModal');
+    toast(fmtG(amt) + ' sent to ' + to, 'success');
+  }
+
+  function confirmDeposit() {
+    const amt = parseFloat(document.getElementById('depositAmount').value);
+    if (!amt || amt <= 0) { toast('Enter a valid amount.', 'error'); return; }
+    balance += amt;
+    refreshBalances();
+    saveState();
+    const ds = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const row = document.createElement('div');
+    row.className = 'tx';
+    row.innerHTML = '<div><div class="name">Deposit</div><div class="date">' + ds + '</div></div><div class="amount pos">+' + fmtG(amt) + '</div>';
+    document.getElementById('txList').insertBefore(row, document.getElementById('txList').firstChild);
+    allTx.unshift({ name: 'Deposit', date: ds, amt: amt });
+    buildStatement();
+    closeModal('depositModal');
+    toast(fmtG(amt) + ' deposited', 'success');
+  }
+
+  function confirmWithdraw() {
+    const amt = parseFloat(document.getElementById('withdrawAmount').value);
+    if (!amt || amt <= 0) { toast('Enter a valid amount.', 'error'); return; }
+    if (amt > balance) { toast('Not enough funds.', 'error'); return; }
+    balance -= amt;
+    refreshBalances();
+    saveState();
+    const ds = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const row = document.createElement('div');
+    row.className = 'tx';
+    row.innerHTML = '<div><div class="name">Withdrawal</div><div class="date">' + ds + '</div></div><div class="amount neg">−' + fmtG(amt) + '</div>';
+    document.getElementById('txList').insertBefore(row, document.getElementById('txList').firstChild);
+    allTx.unshift({ name: 'Withdrawal', date: ds, amt: -amt });
+    buildStatement();
+    closeModal('withdrawModal');
+    toast(fmtG(amt) + ' withdrawn', 'success');
+  }
+
+  function confirmMove() {
+    const amt = parseFloat(document.getElementById('moveAmount').value);
+    if (!amt || amt <= 0) { toast('Enter an amount.', 'error'); return; }
+    if (moveDirection === 'toSavings') {
+      if (amt > balance) { toast('Not enough in Current.', 'error'); return; }
+      balance -= amt; savings += amt;
+      toast(fmtG(amt) + ' moved to Savings', 'success');
+    } else {
+      if (amt > savings) { toast('Not enough in Savings.', 'error'); return; }
+      savings -= amt; balance += amt;
+      toast(fmtG(amt) + ' moved to Current', 'success');
+    }
+    refreshBalances();
+    saveState();
+    closeModal('moveModal');
+  }
+
+  function confirmSetBal() {
+    const amt = parseFloat(document.getElementById('setBalAmount').value);
+    if (isNaN(amt)) { toast('Enter a valid number.', 'error'); return; }
+    balance = amt;
+    refreshBalances();
+    saveState();
+    closeModal('setBalModal');
+    toast('Balance set to ' + fmtG(amt), 'success');
+  }
+
+  function saveState() {
+    localStorage.setItem('fb_balance_v4', balance);
+    localStorage.setItem('fb_savings_v4', savings);
+  }
+
+  function txRow(t) {
+    return '<div><div class="name">' + t.name + '</div><div class="date">' + t.date + '</div></div><div class="amount ' + (t.amt > 0 ? 'pos' : 'neg') + '">' + (t.amt > 0 ? '+' : '−') + fmtG(Math.abs(t.amt)) + '</div>';
+  }
+
+  function buildStatement() {
+    const list = document.getElementById('statementList');
+    list.innerHTML = '';
+    allTx.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'tx';
+      row.innerHTML = txRow(t);
+      list.appendChild(row);
+    });
+  }
+
+  function filterTx() {
+    const q = document.getElementById('txSearch').value.toLowerCase();
+    const list = document.getElementById('statementList');
+    list.innerHTML = '';
+    const filtered = allTx.filter(t => t.name.toLowerCase().includes(q));
+    if (filtered.length === 0) { list.innerHTML = '<p class="empty">No transactions found</p>'; return; }
+    filtered.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'tx';
+      row.innerHTML = txRow(t);
+      list.appendChild(row);
+    });
+  }
+
+  window.onload = () => {
+    if (sessionStorage.getItem('fb_loggedin') === '1') {
+      document.getElementById('loginCard').style.display = 'none';
+      document.getElementById('signupCard').style.display = 'none';
+      document.getElementById('pinScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      
+      updateUserUI();
+      
+      let acct = localStorage.getItem('fb_acct');
+      let card4 = localStorage.getItem('fb_card4');
+      if (acct && card4) document.getElementById('cardNumber').textContent = acct + ' •••• •••• ' + card4;
+      const sb = localStorage.getItem('fb_balance_v4');
+      const ss = localStorage.getItem('fb_savings_v4');
+      balance = sb === null ? START_BALANCE : parseFloat(sb);
+      savings = ss === null ? START_SAVINGS : parseFloat(ss);
+      animateTo(document.getElementById('balanceAmt'), balance);
+      document.getElementById('potCurrent').textContent = fmtG(balance);
+      document.getElementById('potSavings').textContent = fmtG(savings);
+      buildStatement();
+    }
+  };
+</script>
+</body>
+</html>
